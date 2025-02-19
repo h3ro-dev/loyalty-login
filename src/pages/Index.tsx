@@ -1,6 +1,8 @@
 
+import { Link } from "react-router-dom";
 import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 import { RegistrationForm } from "@/components/RegistrationForm";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
   return (
@@ -16,8 +18,12 @@ const Index = () => {
           
           <LegalDisclaimer />
           
-          <div className="bg-card p-6 rounded-lg shadow-sm">
-            <RegistrationForm />
+          <div className="text-center">
+            <Link to="/auth">
+              <Button size="lg">
+                Sign In or Create Account
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
