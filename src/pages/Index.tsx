@@ -98,13 +98,6 @@ const Index = () => {
                   Sign In or Create Account
                 </Button>
               </Link>
-              <div>
-                <Link to="/wallets">
-                  <Button variant="outline" size="lg" className="border-primary/20 hover:bg-primary/10 backdrop-blur-sm">
-                    Connect Wallet
-                  </Button>
-                </Link>
-              </div>
             </div>
           ) : (
             <div className="animate-fadeIn">
