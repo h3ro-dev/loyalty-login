@@ -1,6 +1,5 @@
-
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -18,6 +17,7 @@ import {
 import { toast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { LogOut } from "lucide-react";
 
 const walletSchema = z.object({
   address: z.string().min(42, "Invalid wallet address").max(42, "Invalid wallet address"),
@@ -57,6 +57,19 @@ export default function Wallets() {
       address: "",
     },
   });
+
+  const handleSignOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Error signing out",
+        description: error.message,
+      });
+    } else {
+      navigate("/auth");
+    }
+  };
 
   const fetchWallets = async () => {
     try {
@@ -148,7 +161,33 @@ export default function Wallets() {
 
   return (
     <div className="min-h-screen bg-background">
+      <nav className="border-b bg-card">
+        <div className="container max-w-4xl py-4 flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <Link to="/" className="text-xl font-bold">
+              Chrysalis
+            </Link>
+            <Link to="/wallets" className="text-sm font-medium">
+              Wallets
+            </Link>
+          </div>
+          <Button variant="ghost" size="sm" onClick={handleSignOut}>
+            <LogOut className="h-4 w-4 mr-2" />
+            Sign Out
+          </Button>
+        </div>
+      </nav>
+
       <div className="container max-w-4xl py-8 space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Wallets</h1>
+            <p className="text-muted-foreground">
+              Manage your connected wallets and view their holdings
+            </p>
+          </div>
+        </div>
+
         <Card>
           <CardHeader>
             <CardTitle>Connect Wallet</CardTitle>
