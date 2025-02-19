@@ -33,12 +33,15 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+// Define the project name type based on the database enum
+type ProjectName = "DEBT" | "CHRS" | "ALUM" | "BAUX" | "BGLD" | "OIL" | "DCM" | "DATA" | "DLG" | "GDLG" | "GROW" | "FARM" | "NATG" | "NGAS" | "XPLR" | "EXPL";
+
 const walletSchema = z.object({
   address: z.string().min(42, "Invalid wallet address").max(42, "Invalid wallet address"),
 });
 
 const holdingsSchema = z.object({
-  project_name: z.string().min(1, "Please select a project"),
+  project_name: z.enum(["DEBT", "CHRS", "ALUM", "BAUX", "BGLD", "OIL", "DCM", "DATA", "DLG", "GDLG", "GROW", "FARM", "NATG", "NGAS", "XPLR", "EXPL"]),
   total_nfts: z.number().min(0, "Must be 0 or greater"),
   micro_nfts: z.number().min(0, "Must be 0 or greater"),
   total_tokens: z.number().min(0, "Must be 0 or greater"),
@@ -48,7 +51,7 @@ const holdingsSchema = z.object({
 type WalletFormValues = z.infer<typeof walletSchema>;
 type HoldingsFormValues = z.infer<typeof holdingsSchema>;
 
-const projectOptions = [
+const projectOptions: { value: ProjectName; label: string }[] = [
   { value: "DEBT", label: "DEBT" },
   { value: "CHRS", label: "CHRS" },
   { value: "ALUM", label: "ALUM" },
@@ -67,25 +70,25 @@ const projectOptions = [
   { value: "EXPL", label: "EXPL" },
 ];
 
-interface Wallet {
-  id: string;
-  address: string;
-  tokenHoldings: TokenHolding[];
-  nftHoldings: NFTHolding[];
-}
-
 interface TokenHolding {
   id: string;
-  project_name: string;
+  project_name: ProjectName;
   total_tokens: number;
   piggy_bank_tokens: number;
 }
 
 interface NFTHolding {
   id: string;
-  project_name: string;
+  project_name: ProjectName;
   total_nfts: number;
   micro_nfts: number;
+}
+
+interface Wallet {
+  id: string;
+  address: string;
+  tokenHoldings: TokenHolding[];
+  nftHoldings: NFTHolding[];
 }
 
 export default function Wallets() {
@@ -232,7 +235,7 @@ export default function Wallets() {
           project_name: values.project_name,
           total_tokens: values.total_tokens,
           piggy_bank_tokens: values.piggy_bank_tokens,
-        });
+        } as const);
 
       if (tokenError) throw tokenError;
 
@@ -243,7 +246,7 @@ export default function Wallets() {
           project_name: values.project_name,
           total_nfts: values.total_nfts,
           micro_nfts: values.micro_nfts,
-        });
+        } as const);
 
       if (nftError) throw nftError;
 
