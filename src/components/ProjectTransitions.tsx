@@ -4,6 +4,11 @@ import { Card, CardContent } from "@/components/ui/card";
 
 const projects = [
   {
+    oldName: "DEBT",
+    newName: "CHRS",
+    imageUrl: "/lovable-uploads/070fbee2-f928-4140-9dfb-4c6f752c659f.png"
+  },
+  {
     oldName: "DLG",
     newName: "DGLD",
     imageUrl: "/lovable-uploads/c41740a7-9f80-4df5-9083-789e5248aeea.png"
