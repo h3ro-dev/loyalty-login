@@ -29,6 +29,7 @@ type AuthFormValues = z.infer<typeof authSchema>;
 export default function Auth() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("signin");
 
   const form = useForm<AuthFormValues>({
     resolver: zodResolver(authSchema),
@@ -51,7 +52,18 @@ export default function Auth() {
             password: values.password,
           });
 
-      if (error) throw error;
+      if (error) {
+        if (error.message === "User already registered") {
+          toast({
+            variant: "destructive",
+            title: "Account already exists",
+            description: "Please sign in instead.",
+          });
+          setActiveTab("signin");
+          return;
+        }
+        throw error;
+      }
 
       if (isSignUp) {
         toast({
@@ -86,7 +98,7 @@ export default function Auth() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="signin" className="space-y-4">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="signin">Sign In</TabsTrigger>
               <TabsTrigger value="signup">Sign Up</TabsTrigger>
