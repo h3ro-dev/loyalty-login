@@ -37,8 +37,9 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <div className="container max-w-4xl py-8">
         <div className="space-y-6">
-          <div className="text-center space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight">Chrysalis Migration</h1>
+          <div className="text-center space-y-4">
+            <h1 className="text-4xl font-bold tracking-tight">Largest Rewards Giveaway in History</h1>
+            <p className="text-xl font-semibold text-accent">Enter Now to Claim Your Stake</p>
             <p className="text-muted-foreground">
               Welcome to the future of digital asset management
             </p>
