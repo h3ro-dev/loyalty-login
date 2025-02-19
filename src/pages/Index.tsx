@@ -1,7 +1,6 @@
 
 import { Link } from "react-router-dom";
 import { LegalDisclaimer } from "@/components/LegalDisclaimer";
-import { RegistrationForm } from "@/components/RegistrationForm";
 import { Button } from "@/components/ui/button";
 
 const Index = () => {
@@ -18,12 +17,19 @@ const Index = () => {
           
           <LegalDisclaimer />
           
-          <div className="text-center">
+          <div className="text-center space-y-4">
             <Link to="/auth">
               <Button size="lg">
                 Sign In or Create Account
               </Button>
             </Link>
+            <div>
+              <Link to="/wallets">
+                <Button variant="outline" size="lg">
+                  Connect Wallet
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </div>
