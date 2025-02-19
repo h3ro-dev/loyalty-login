@@ -107,7 +107,7 @@ export default function Wallets() {
   const holdingsForm = useForm<HoldingsFormValues>({
     resolver: zodResolver(holdingsSchema),
     defaultValues: {
-      project_name: "",
+      project_name: "DEBT",
       total_nfts: 0,
       micro_nfts: 0,
       total_tokens: 0,
