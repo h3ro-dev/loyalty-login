@@ -61,21 +61,56 @@ export const ProjectTransitions = () => {
           key={project.oldName}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: index * 0.1 }}
+          transition={{ 
+            duration: 0.7,
+            delay: index * 0.15,
+            ease: [0.215, 0.610, 0.355, 1.000] // Custom easing for a more organic feel
+          }}
+          whileHover={{ 
+            scale: 1.02,
+            transition: { duration: 0.2 }
+          }}
         >
-          <Card className="overflow-hidden hover:shadow-lg transition-shadow">
-            <CardContent className="p-4">
-              <div className="aspect-square relative mb-4">
+          <Card className="overflow-hidden hover:shadow-lg transition-shadow relative">
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent"
+              animate={{
+                opacity: [0.5, 0.8, 0.5],
+              }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            />
+            <CardContent className="p-4 relative">
+              <motion.div 
+                className="aspect-square relative mb-4 overflow-hidden rounded-md"
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.3 }}
+              >
                 <img
                   src={project.imageUrl}
                   alt={project.newName}
-                  className="w-full h-full object-cover rounded-md"
+                  className="w-full h-full object-cover"
                 />
-              </div>
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent"
+                  animate={{
+                    x: ["0%", "100%", "0%"],
+                  }}
+                  transition={{
+                    duration: 8,
+                    repeat: Infinity,
+                    ease: "linear"
+                  }}
+                />
+              </motion.div>
               <div className="space-y-2 text-center">
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 0.6 }}
+                  transition={{ duration: 0.5, delay: index * 0.15 + 0.3 }}
                   className="text-sm text-muted-foreground line-through"
                 >
                   {project.oldName}
@@ -83,10 +118,29 @@ export const ProjectTransitions = () => {
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
+                  transition={{ 
+                    duration: 0.5, 
+                    delay: index * 0.15 + 0.4,
+                    ease: "easeOut"
+                  }}
                   className={`font-bold text-lg tracking-wide leading-none bg-clip-text text-transparent ${project.gradientClass}`}
                 >
-                  {project.newName}
+                  <motion.span
+                    animate={{
+                      backgroundPosition: ["0%", "100%", "0%"],
+                    }}
+                    style={{
+                      display: "inline-block",
+                      backgroundSize: "200% auto",
+                    }}
+                    transition={{
+                      duration: 10,
+                      repeat: Infinity,
+                      ease: "linear"
+                    }}
+                  >
+                    {project.newName}
+                  </motion.span>
                 </motion.div>
               </div>
             </CardContent>
