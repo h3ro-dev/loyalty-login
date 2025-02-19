@@ -8,6 +8,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AnimatedBackground } from "@/components/auth/AnimatedBackground";
 import { AuthForm } from "@/components/auth/AuthForm";
 
+// Define the type for form values
+type AuthFormValues = {
+  email: string;
+  password: string;
+};
+
 export default function Auth() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -34,7 +40,17 @@ export default function Auth() {
     };
   }, [navigate]);
 
-  const handleSubmit = async (values: { email: string; password: string }, isSignUp: boolean) => {
+  const handleSubmit = async (values: AuthFormValues, isSignUp: boolean) => {
+    // Ensure values are not undefined before proceeding
+    if (!values.email || !values.password) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Please provide both email and password",
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
       const { error } = isSignUp
@@ -115,7 +131,7 @@ export default function Auth() {
             
             <TabsContent value="signin">
               <AuthForm
-                onSubmit={(values) => handleSubmit(values, false)}
+                onSubmit={(values: AuthFormValues) => handleSubmit(values, false)}
                 isLoading={isLoading}
                 type="signin"
               />
@@ -123,7 +139,7 @@ export default function Auth() {
             
             <TabsContent value="signup">
               <AuthForm
-                onSubmit={(values) => handleSubmit(values, true)}
+                onSubmit={(values: AuthFormValues) => handleSubmit(values, true)}
                 isLoading={isLoading}
                 type="signup"
               />
