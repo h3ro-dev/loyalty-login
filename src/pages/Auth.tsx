@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -243,69 +244,71 @@ export default function Auth() {
         </CardContent>
       </Card>
 
-      <style jsx>{`
-        @keyframes fadeInAndScale {
-          0% {
-            opacity: 0;
-            transform: translate(-50%, -50%) scale(0.8);
+      <style>
+        {`
+          @keyframes fadeInAndScale {
+            0% {
+              opacity: 0;
+              transform: translate(-50%, -50%) scale(0.8);
+            }
+            100% {
+              opacity: 0.5;
+              transform: translate(-50%, -50%) scale(1);
+            }
           }
-          100% {
-            opacity: 0.5;
-            transform: translate(-50%, -50%) scale(1);
-          }
-        }
 
-        @keyframes pulseGlow {
-          0%, 100% {
-            opacity: 0.5;
-            transform: translate(-50%, -50%) scale(1);
+          @keyframes pulseGlow {
+            0%, 100% {
+              opacity: 0.5;
+              transform: translate(-50%, -50%) scale(1);
+            }
+            50% {
+              opacity: 0.7;
+              transform: translate(-50%, -50%) scale(1.1);
+            }
           }
-          50% {
-            opacity: 0.7;
-            transform: translate(-50%, -50%) scale(1.1);
-          }
-        }
 
-        @keyframes fadeInAndFloat {
-          0% {
-            opacity: 0;
-            transform: translateY(20px);
+          @keyframes fadeInAndFloat {
+            0% {
+              opacity: 0;
+              transform: translateY(20px);
+            }
+            100% {
+              opacity: 0.5;
+              transform: translateY(0);
+            }
           }
-          100% {
-            opacity: 0.5;
-            transform: translateY(0);
-          }
-        }
 
-        @keyframes floatAnimation {
-          0%, 100% {
-            transform: translateY(0);
+          @keyframes floatAnimation {
+            0%, 100% {
+              transform: translateY(0);
+            }
+            50% {
+              transform: translateY(-20px);
+            }
           }
-          50% {
-            transform: translateY(-20px);
-          }
-        }
 
-        @keyframes fadeInAndRotate {
-          0% {
-            opacity: 0;
-            transform: rotate(0deg);
+          @keyframes fadeInAndRotate {
+            0% {
+              opacity: 0;
+              transform: rotate(0deg);
+            }
+            100% {
+              opacity: 0.5;
+              transform: rotate(360deg);
+            }
           }
-          100% {
-            opacity: 0.5;
-            transform: rotate(360deg);
-          }
-        }
 
-        @keyframes rotateGlow {
-          from {
-            transform: rotate(0deg);
+          @keyframes rotateGlow {
+            from {
+              transform: rotate(0deg);
+            }
+            to {
+              transform: rotate(360deg);
+            }
           }
-          to {
-            transform: rotate(360deg);
-          }
-        }
-      `}</style>
+        `}
+      </style>
     </div>
   );
 }
