@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/form";
 import { toast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 const walletSchema = z.object({
   address: z.string().min(42, "Invalid wallet address").max(42, "Invalid wallet address"),
@@ -24,9 +25,31 @@ const walletSchema = z.object({
 
 type WalletFormValues = z.infer<typeof walletSchema>;
 
+interface Wallet {
+  id: string;
+  address: string;
+  tokenHoldings: TokenHolding[];
+  nftHoldings: NFTHolding[];
+}
+
+interface TokenHolding {
+  id: string;
+  project_name: string;
+  total_tokens: number;
+  piggy_bank_tokens: number;
+}
+
+interface NFTHolding {
+  id: string;
+  project_name: string;
+  total_nfts: number;
+  micro_nfts: number;
+}
+
 export default function Wallets() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [wallets, setWallets] = useState<Wallet[]>([]);
 
   const form = useForm<WalletFormValues>({
     resolver: zodResolver(walletSchema),
@@ -34,6 +57,57 @@ export default function Wallets() {
       address: "",
     },
   });
+
+  const fetchWallets = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        navigate("/auth");
+        return;
+      }
+
+      const { data: walletsData, error: walletsError } = await supabase
+        .from("wallets")
+        .select("*")
+        .eq("profile_id", user.id);
+
+      if (walletsError) throw walletsError;
+
+      const walletsWithHoldings = await Promise.all(
+        walletsData.map(async (wallet) => {
+          const [{ data: tokenHoldings }, { data: nftHoldings }] = await Promise.all([
+            supabase
+              .from("token_holdings")
+              .select("*")
+              .eq("wallet_id", wallet.id),
+            supabase
+              .from("nft_holdings")
+              .select("*")
+              .eq("wallet_id", wallet.id),
+          ]);
+
+          return {
+            ...wallet,
+            tokenHoldings: tokenHoldings || [],
+            nftHoldings: nftHoldings || [],
+          };
+        })
+      );
+
+      setWallets(walletsWithHoldings);
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      });
+    }
+  };
+
+  useEffect(() => {
+    fetchWallets();
+  }, []);
 
   const onSubmit = async (values: WalletFormValues) => {
     setIsLoading(true);
@@ -60,6 +134,7 @@ export default function Wallets() {
       });
       
       form.reset();
+      fetchWallets();
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -73,7 +148,7 @@ export default function Wallets() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container max-w-2xl py-8">
+      <div className="container max-w-4xl py-8 space-y-6">
         <Card>
           <CardHeader>
             <CardTitle>Connect Wallet</CardTitle>
@@ -107,6 +182,74 @@ export default function Wallets() {
             </Form>
           </CardContent>
         </Card>
+
+        {wallets.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Connected Wallets</CardTitle>
+              <CardDescription>
+                View and manage your connected wallets and their holdings
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {wallets.map((wallet) => (
+                <div key={wallet.id} className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-semibold">{wallet.address}</h3>
+                  </div>
+                  
+                  {wallet.tokenHoldings.length > 0 && (
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-medium">Token Holdings</h4>
+                      <div className="grid gap-4 md:grid-cols-2">
+                        {wallet.tokenHoldings.map((token) => (
+                          <Card key={token.id}>
+                            <CardContent className="p-4">
+                              <div className="space-y-2">
+                                <div className="font-medium">{token.project_name}</div>
+                                <div className="text-sm text-muted-foreground">
+                                  Total: {token.total_tokens}
+                                </div>
+                                <div className="text-sm text-muted-foreground">
+                                  Piggy Bank: {token.piggy_bank_tokens}
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {wallet.nftHoldings.length > 0 && (
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-medium">NFT Holdings</h4>
+                      <div className="grid gap-4 md:grid-cols-2">
+                        {wallet.nftHoldings.map((nft) => (
+                          <Card key={nft.id}>
+                            <CardContent className="p-4">
+                              <div className="space-y-2">
+                                <div className="font-medium">{nft.project_name}</div>
+                                <div className="text-sm text-muted-foreground">
+                                  Total: {nft.total_nfts}
+                                </div>
+                                <div className="text-sm text-muted-foreground">
+                                  Micro NFTs: {nft.micro_nfts}
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <Separator />
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
