@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 import { ProjectTransitions } from "@/components/ProjectTransitions";
 import { Button } from "@/components/ui/button";
-import { Clock, Sparkles } from "lucide-react";
+import { Clock, Sparkles, Wallet } from "lucide-react";
 
 const Index = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -60,9 +60,24 @@ const Index = () => {
             </p>
           </div>
           
-          <div className="flex items-center justify-center gap-2 text-primary animate-pulse">
-            <Clock className="h-5 w-5" />
-            <span className="text-sm font-medium">Time Sensitive</span>
+          <div className="space-y-4">
+            <div className="flex items-center justify-center gap-2 text-primary animate-pulse">
+              <Clock className="h-5 w-5" />
+              <span className="text-sm font-medium">Time Sensitive</span>
+            </div>
+            
+            <div className="flex justify-center">
+              <Link to="/wallets">
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="border-primary/20 hover:bg-primary/10 backdrop-blur-sm"
+                >
+                  <Wallet className="mr-2 h-4 w-4" />
+                  Manage Your Wallets
+                </Button>
+              </Link>
+            </div>
           </div>
 
           <div className="text-center space-y-4 animate-slideUp">
