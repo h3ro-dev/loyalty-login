@@ -55,10 +55,10 @@
     @apply bg-gradient-to-r from-[#2AB673] to-[#47D58C];
   }
   .gradient-baux {
-    @apply bg-gradient-to-r from-[#FF8142] to-[#FFAB7B];
+    @apply bg-gradient-to-r from-[#FF6A28] to-[#FFAB7B];
   }
   .gradient-data {
-    @apply bg-gradient-to-r from-[#7B42FF] to-[#B27BFF];
+    @apply bg-gradient-to-r from-[#6428FF] to-[#B27BFF];
   }
   .gradient-dgld {
     @apply bg-gradient-to-r from-[#FFD642] to-[#FFE47B];
@@ -73,7 +73,7 @@
     @apply bg-gradient-to-r from-[#4287FF] to-[#7BB1FF];
   }
   .gradient-oil {
-    @apply bg-gradient-to-r from-[#8742FF] to-[#B47BFF];
+    @apply bg-gradient-to-r from-[#7528FF] to-[#B47BFF];
   }
   .gradient-chrs {
     @apply bg-gradient-to-r from-[#42FFAE] to-[#7BFFC9];

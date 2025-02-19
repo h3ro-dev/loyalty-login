@@ -17,7 +17,7 @@ const projects = [
   },
   {
     oldName: "DCM",
-    newName: "Data",
+    newName: "DATA",
     imageUrl: "/lovable-uploads/67daa9a8-1866-4384-98c2-9f5011696b0a.png",
     gradientClass: "gradient-data"
   },
@@ -47,7 +47,7 @@ const projects = [
   },
   {
     oldName: "BGLD",
-    newName: "Oil",
+    newName: "OIL",
     imageUrl: "/lovable-uploads/fbbbb513-115d-4184-97d3-94b2cda2539b.png",
     gradientClass: "gradient-oil"
   }
@@ -84,7 +84,7 @@ export const ProjectTransitions = () => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className={`font-semibold text-lg bg-clip-text text-transparent ${project.gradientClass}`}
+                  className={`font-bold text-lg tracking-wide leading-none bg-clip-text text-transparent ${project.gradientClass}`}
                 >
                   {project.newName}
                 </motion.div>
