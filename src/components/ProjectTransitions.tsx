@@ -1,5 +1,5 @@
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 
 const projects = [
@@ -56,97 +56,110 @@ const projects = [
 export const ProjectTransitions = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-      {projects.map((project, index) => (
-        <motion.div
-          key={project.oldName}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ 
-            duration: 0.7,
-            delay: index * 0.15,
-            ease: [0.215, 0.610, 0.355, 1.000] // Custom easing for a more organic feel
-          }}
-          whileHover={{ 
-            scale: 1.02,
-            transition: { duration: 0.2 }
-          }}
-        >
-          <Card className="overflow-hidden hover:shadow-lg transition-shadow relative">
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent"
-              animate={{
-                opacity: [0.5, 0.8, 0.5],
-              }}
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            />
-            <CardContent className="p-4 relative">
-              <motion.div 
-                className="aspect-square relative mb-4 overflow-hidden rounded-md"
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.3 }}
-              >
-                <img
-                  src={project.imageUrl}
-                  alt={project.newName}
-                  className="w-full h-full object-cover"
-                />
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent"
-                  animate={{
-                    x: ["0%", "100%", "0%"],
+      <AnimatePresence>
+        {projects.map((project, index) => (
+          <motion.div
+            key={project.oldName}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ 
+              duration: 0.9,
+              delay: index * 0.1,
+              ease: [0.215, 0.610, 0.355, 1.000]
+            }}
+            whileHover={{ 
+              scale: 1.03,
+              transition: { duration: 0.3, ease: "easeOut" }
+            }}
+          >
+            <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 relative group">
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent"
+                animate={{
+                  opacity: [0.3, 0.6, 0.3],
+                  scale: [1, 1.05, 1],
+                }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
+              <CardContent className="p-4 relative">
+                <motion.div 
+                  className="aspect-square relative mb-4 overflow-hidden rounded-md"
+                  whileHover={{ 
+                    scale: 1.05,
+                    transition: { duration: 0.4, ease: "easeOut" }
                   }}
-                  transition={{
-                    duration: 8,
-                    repeat: Infinity,
-                    ease: "linear"
-                  }}
-                />
-              </motion.div>
-              <div className="space-y-2 text-center">
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 0.6 }}
-                  transition={{ duration: 0.5, delay: index * 0.15 + 0.3 }}
-                  className="text-sm text-muted-foreground line-through"
                 >
-                  {project.oldName}
-                </motion.div>
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ 
-                    duration: 0.5, 
-                    delay: index * 0.15 + 0.4,
-                    ease: "easeOut"
-                  }}
-                  className={`font-bold text-lg tracking-wide leading-none bg-clip-text text-transparent ${project.gradientClass}`}
-                >
-                  <motion.span
+                  <img
+                    src={project.imageUrl}
+                    alt={project.newName}
+                    className="w-full h-full object-cover transform transition-transform duration-700"
+                  />
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent"
                     animate={{
-                      backgroundPosition: ["0%", "100%", "0%"],
-                    }}
-                    style={{
-                      display: "inline-block",
-                      backgroundSize: "200% auto",
+                      x: ["0%", "100%", "0%"],
+                      opacity: [0.4, 0.6, 0.4],
                     }}
                     transition={{
-                      duration: 10,
+                      duration: 8,
                       repeat: Infinity,
                       ease: "linear"
                     }}
-                  >
-                    {project.newName}
-                  </motion.span>
+                  />
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  />
                 </motion.div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-      ))}
+                <div className="space-y-2 text-center relative">
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 0.6 }}
+                    transition={{ duration: 0.7, delay: index * 0.15 + 0.3 }}
+                    className="text-sm text-muted-foreground line-through"
+                  >
+                    {project.oldName}
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ 
+                      duration: 0.7, 
+                      delay: index * 0.15 + 0.4,
+                      ease: "easeOut"
+                    }}
+                    className={`font-bold text-lg tracking-wide leading-none bg-clip-text text-transparent ${project.gradientClass}`}
+                  >
+                    <motion.span
+                      animate={{
+                        backgroundPosition: ["0%", "100%", "0%"],
+                      }}
+                      style={{
+                        display: "inline-block",
+                        backgroundSize: "200% auto",
+                      }}
+                      transition={{
+                        duration: 12,
+                        repeat: Infinity,
+                        ease: "linear"
+                      }}
+                      whileHover={{
+                        scale: 1.1,
+                        transition: { duration: 0.2 }
+                      }}
+                    >
+                      {project.newName}
+                    </motion.span>
+                  </motion.div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
+      </AnimatePresence>
     </div>
   );
 };
