@@ -15,8 +15,11 @@ export const LegalDisclaimer = () => {
         <p className="mb-2">
           <strong>Warning:</strong> Falsification of KYC information will be reported to proper authorities.
         </p>
-        <p className="font-semibold">
+        <p className="mb-2">
           US Citizens Notice: You are subject to Expanded Due Diligence (EDD) and may be subject to additional reporting requirements.
+        </p>
+        <p className="text-sm text-muted-foreground mt-4 border-t border-destructive/20 pt-3">
+          <strong>Additional Verification Notice:</strong> If additional information is needed to validate your wallet, you will be contacted. Required information for further verification may include, but is not limited to: Primary Residential Address, Phone Number, Date of Purchase of particular NFTs, Method of Purchase, and Sales Channel (how you came to purchase your NFTs).
         </p>
       </AlertDescription>
     </Alert>
