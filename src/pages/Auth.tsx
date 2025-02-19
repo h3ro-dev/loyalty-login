@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -31,6 +31,29 @@ export default function Auth() {
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("signin");
 
+  useEffect(() => {
+    // Check if user is already authenticated
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        navigate("/");
+      }
+    };
+
+    checkAuth();
+
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        navigate("/");
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
+
   const form = useForm<AuthFormValues>({
     resolver: zodResolver(authSchema),
     defaultValues: {
@@ -46,6 +69,9 @@ export default function Auth() {
         ? await supabase.auth.signUp({
             email: values.email,
             password: values.password,
+            options: {
+              emailRedirectTo: `${window.location.origin}/auth/callback`,
+            },
           })
         : await supabase.auth.signInWithPassword({
             email: values.email,
@@ -78,7 +104,6 @@ export default function Auth() {
           title: "Welcome back!",
           description: "You have successfully signed in.",
         });
-        navigate("/");
       }
     } catch (error: any) {
       console.error("Auth error:", error);
