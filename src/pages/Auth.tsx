@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -32,7 +31,6 @@ export default function Auth() {
   const [activeTab, setActiveTab] = useState("signin");
 
   useEffect(() => {
-    // Check if user is already authenticated
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
@@ -42,7 +40,6 @@ export default function Auth() {
 
     checkAuth();
 
-    // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' && session) {
         navigate("/");
@@ -119,17 +116,32 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Animated backdrop */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -inset-[10px] opacity-50">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/20 rounded-full blur-[100px] animate-pulse"></div>
-          <div className="absolute top-1/4 left-1/4 w-[300px] h-[300px] bg-accent/20 rounded-full blur-[80px] animate-pulse" style={{ animationDelay: "0.5s" }}></div>
-          <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-secondary/20 rounded-full blur-[90px] animate-pulse" style={{ animationDelay: "1s" }}></div>
+          <div 
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/20 rounded-full blur-[100px]"
+            style={{
+              animation: 'fadeInAndScale 1s ease-out forwards, pulseGlow 3s ease-in-out infinite'
+            }}
+          ></div>
+          <div 
+            className="absolute top-1/4 left-1/4 w-[300px] h-[300px] bg-accent/20 rounded-full blur-[80px]"
+            style={{
+              animation: 'fadeInAndFloat 1.2s ease-out forwards, floatAnimation 4s ease-in-out infinite',
+              animationDelay: '0.3s'
+            }}
+          ></div>
+          <div 
+            className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-secondary/20 rounded-full blur-[90px]"
+            style={{
+              animation: 'fadeInAndRotate 1.5s ease-out forwards, rotateGlow 5s linear infinite',
+              animationDelay: '0.6s'
+            }}
+          ></div>
         </div>
       </div>
 
-      {/* Content */}
-      <Card className="w-full max-w-md relative backdrop-blur-sm bg-card/80">
+      <Card className="w-full max-w-md relative backdrop-blur-sm bg-card/80 animate-fadeIn">
         <CardHeader className="space-y-4">
           <div className="text-center space-y-2">
             <CardTitle className="text-3xl font-bold tracking-tight">
@@ -230,6 +242,70 @@ export default function Auth() {
           </Tabs>
         </CardContent>
       </Card>
+
+      <style jsx>{`
+        @keyframes fadeInAndScale {
+          0% {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.8);
+          }
+          100% {
+            opacity: 0.5;
+            transform: translate(-50%, -50%) scale(1);
+          }
+        }
+
+        @keyframes pulseGlow {
+          0%, 100% {
+            opacity: 0.5;
+            transform: translate(-50%, -50%) scale(1);
+          }
+          50% {
+            opacity: 0.7;
+            transform: translate(-50%, -50%) scale(1.1);
+          }
+        }
+
+        @keyframes fadeInAndFloat {
+          0% {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          100% {
+            opacity: 0.5;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes floatAnimation {
+          0%, 100% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-20px);
+          }
+        }
+
+        @keyframes fadeInAndRotate {
+          0% {
+            opacity: 0;
+            transform: rotate(0deg);
+          }
+          100% {
+            opacity: 0.5;
+            transform: rotate(360deg);
+          }
+        }
+
+        @keyframes rotateGlow {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
+      `}</style>
     </div>
   );
 }
