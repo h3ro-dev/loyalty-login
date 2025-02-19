@@ -33,7 +33,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-// Define the project name type based on the database enum
 type ProjectName = "DEBT" | "CHRS" | "ALUM" | "BAUX" | "BGLD" | "OIL" | "DCM" | "DATA" | "DLG" | "GDLG" | "GROW" | "FARM" | "NATG" | "NGAS" | "XPLR" | "EXPL";
 
 const walletSchema = z.object({
@@ -220,31 +219,70 @@ export default function Wallets() {
 
     setIsLoading(true);
     try {
-      const { error: tokenError } = await supabase
-        .from("token_holdings")
-        .insert({
-          wallet_id: selectedWallet,
-          project_name: values.project_name,
-          total_tokens: values.total_tokens,
-          piggy_bank_tokens: values.piggy_bank_tokens,
-        } as const);
+      const [{ data: existingTokenHoldings }, { data: existingNFTHoldings }] = await Promise.all([
+        supabase
+          .from("token_holdings")
+          .select("id")
+          .eq("wallet_id", selectedWallet)
+          .eq("project_name", values.project_name)
+          .maybeSingle(),
+        supabase
+          .from("nft_holdings")
+          .select("id")
+          .eq("wallet_id", selectedWallet)
+          .eq("project_name", values.project_name)
+          .maybeSingle(),
+      ]);
 
-      if (tokenError) throw tokenError;
+      if (existingTokenHoldings?.id) {
+        const { error: tokenError } = await supabase
+          .from("token_holdings")
+          .update({
+            total_tokens: values.total_tokens,
+            piggy_bank_tokens: values.piggy_bank_tokens,
+          })
+          .eq("id", existingTokenHoldings.id);
 
-      const { error: nftError } = await supabase
-        .from("nft_holdings")
-        .insert({
-          wallet_id: selectedWallet,
-          project_name: values.project_name,
-          total_nfts: values.total_nfts,
-          micro_nfts: values.micro_nfts,
-        } as const);
+        if (tokenError) throw tokenError;
+      } else {
+        const { error: tokenError } = await supabase
+          .from("token_holdings")
+          .insert({
+            wallet_id: selectedWallet,
+            project_name: values.project_name,
+            total_tokens: values.total_tokens,
+            piggy_bank_tokens: values.piggy_bank_tokens,
+          } as const);
 
-      if (nftError) throw nftError;
+        if (tokenError) throw tokenError;
+      }
+
+      if (existingNFTHoldings?.id) {
+        const { error: nftError } = await supabase
+          .from("nft_holdings")
+          .update({
+            total_nfts: values.total_nfts,
+            micro_nfts: values.micro_nfts,
+          })
+          .eq("id", existingNFTHoldings.id);
+
+        if (nftError) throw nftError;
+      } else {
+        const { error: nftError } = await supabase
+          .from("nft_holdings")
+          .insert({
+            wallet_id: selectedWallet,
+            project_name: values.project_name,
+            total_nfts: values.total_nfts,
+            micro_nfts: values.micro_nfts,
+          } as const);
+
+        if (nftError) throw nftError;
+      }
 
       toast({
-        title: "Holdings added",
-        description: "Your holdings have been successfully recorded.",
+        title: existingTokenHoldings || existingNFTHoldings ? "Holdings updated" : "Holdings added",
+        description: `Your holdings have been successfully ${existingTokenHoldings || existingNFTHoldings ? "updated" : "recorded"}.`,
       });
       
       holdingsForm.reset();
