@@ -53,21 +53,13 @@ type HoldingsFormValues = z.infer<typeof holdingsSchema>;
 
 const projectOptions: { value: ProjectName; label: string }[] = [
   { value: "DEBT", label: "DEBT" },
-  { value: "CHRS", label: "CHRS" },
-  { value: "ALUM", label: "ALUM" },
-  { value: "BAUX", label: "BAUX" },
-  { value: "BGLD", label: "BGLD" },
-  { value: "OIL", label: "OIL" },
-  { value: "DCM", label: "DCM" },
-  { value: "DATA", label: "DATA" },
   { value: "DLG", label: "DLG" },
-  { value: "GDLG", label: "GDLG" },
-  { value: "GROW", label: "GROW" },
-  { value: "FARM", label: "FARM" },
-  { value: "NATG", label: "NATG" },
-  { value: "NGAS", label: "NGAS" },
+  { value: "ALUM", label: "ALUM" },
   { value: "XPLR", label: "XPLR" },
-  { value: "EXPL", label: "EXPL" },
+  { value: "BGLD", label: "BGLD" },
+  { value: "NATG", label: "NATG" },
+  { value: "DCM", label: "DCM" },
+  { value: "GROW", label: "GROW" },
 ];
 
 interface TokenHolding {
@@ -441,7 +433,7 @@ export default function Wallets() {
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel className="flex items-center gap-2">
-                                Total Tokens
+                                Tokens in Wallet
                                 <TooltipProvider>
                                   <Tooltip>
                                     <TooltipTrigger>
