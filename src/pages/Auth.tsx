@@ -118,8 +118,18 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Animated backdrop */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -inset-[10px] opacity-50">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/20 rounded-full blur-[100px] animate-pulse"></div>
+          <div className="absolute top-1/4 left-1/4 w-[300px] h-[300px] bg-accent/20 rounded-full blur-[80px] animate-pulse" style={{ animationDelay: "0.5s" }}></div>
+          <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-secondary/20 rounded-full blur-[90px] animate-pulse" style={{ animationDelay: "1s" }}></div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <Card className="w-full max-w-md relative backdrop-blur-sm bg-card/80">
         <CardHeader className="space-y-4">
           <div className="text-center space-y-2">
             <CardTitle className="text-3xl font-bold tracking-tight">
