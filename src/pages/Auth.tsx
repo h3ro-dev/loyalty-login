@@ -53,12 +53,9 @@ export default function Auth() {
           });
 
       if (error) {
-        // Parse the error body which contains the detailed error information
-        const errorDetails = error.body ? JSON.parse(error.body) : null;
-        
         if (
-          errorDetails?.code === "user_already_exists" ||
-          error.message.includes("User already registered")
+          error.message.includes("User already registered") ||
+          error.message.includes("already exists")
         ) {
           toast({
             title: "Account already exists",
@@ -98,10 +95,17 @@ export default function Auth() {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">Welcome to Chrysalis</CardTitle>
-          <CardDescription>
-            Sign in or create an account to manage your holdings
+        <CardHeader className="space-y-4">
+          <div className="text-center space-y-2">
+            <CardTitle className="text-3xl font-bold tracking-tight">
+              Largest Rewards Giveaway in History
+            </CardTitle>
+            <CardDescription className="text-xl font-semibold text-primary">
+              Enter Now to Claim Your Stake
+            </CardDescription>
+          </div>
+          <CardDescription className="text-center">
+            Sign in or create an account to manage your holdings and participate in the giveaway
           </CardDescription>
         </CardHeader>
         <CardContent>
