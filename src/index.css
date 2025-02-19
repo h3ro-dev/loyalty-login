@@ -21,7 +21,7 @@
     --secondary-foreground: 0 0% 95%;
 
     --muted: 180 3% 15%;
-    --muted-foreground: 0 0% 70%;
+    --muted-foreground: 0 0% 85%;
 
     --accent: 152 57% 37%;
     --accent-foreground: 0 0% 95%;
@@ -49,36 +49,36 @@
 
 @layer utilities {
   .text-gradient {
-    @apply bg-gradient-to-r from-[#2AB673] to-[#47D58C] bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-[#145D3E] via-[#2AB673] to-[#47D58C] bg-clip-text text-transparent;
   }
   .bg-gradient {
-    @apply bg-gradient-to-r from-[#2AB673] to-[#47D58C];
+    @apply bg-gradient-to-r from-[#145D3E] via-[#2AB673] to-[#47D58C];
   }
   .gradient-baux {
-    @apply bg-gradient-to-r from-[#FF6A28] to-[#FFAB7B];
+    @apply bg-gradient-to-r from-[#FF5200] to-[#FFAB7B];
   }
   .gradient-data {
-    @apply bg-gradient-to-r from-[#6428FF] to-[#B27BFF];
+    @apply bg-gradient-to-r from-[#4A00FF] to-[#B27BFF];
   }
   .gradient-dgld {
-    @apply bg-gradient-to-r from-[#FFD642] to-[#FFE47B];
+    @apply bg-gradient-to-r from-[#FFD000] to-[#FFE47B];
   }
   .gradient-xprl {
-    @apply bg-gradient-to-r from-[#FF42A1] to-[#FF7BC4];
+    @apply bg-gradient-to-r from-[#FF1A88] to-[#FF7BC4];
   }
   .gradient-farm {
-    @apply bg-gradient-to-r from-[#D6BA48] to-[#E8D690];
+    @apply bg-gradient-to-r from-[#C4A42B] to-[#E8D690];
   }
   .gradient-ngas {
-    @apply bg-gradient-to-r from-[#4287FF] to-[#7BB1FF];
+    @apply bg-gradient-to-r from-[#2970FF] to-[#7BB1FF];
   }
   .gradient-oil {
-    @apply bg-gradient-to-r from-[#7528FF] to-[#B47BFF];
+    @apply bg-gradient-to-r from-[#5C00FF] to-[#B47BFF];
   }
   .gradient-chrs {
-    @apply bg-gradient-to-r from-[#42FFAE] to-[#7BFFC9];
+    @apply bg-gradient-to-r from-[#00FF8C] to-[#7BFFC9];
   }
   .gradient-fish {
-    @apply bg-gradient-to-r from-[#42FFE8] to-[#7BFFF1];
+    @apply bg-gradient-to-r from-[#00FFE0] to-[#7BFFF1];
   }
 }
