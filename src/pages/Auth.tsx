@@ -53,13 +53,11 @@ export default function Auth() {
           });
 
       if (error) {
-        // Check both the error code and message for user_already_exists case
-        const errorBody = error.message.includes('{') 
-          ? JSON.parse(error.message)
-          : null;
+        // Parse the error body which contains the detailed error information
+        const errorDetails = error.body ? JSON.parse(error.body) : null;
         
         if (
-          errorBody?.code === "user_already_exists" ||
+          errorDetails?.code === "user_already_exists" ||
           error.message.includes("User already registered")
         ) {
           toast({
