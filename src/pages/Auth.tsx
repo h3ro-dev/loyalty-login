@@ -24,11 +24,13 @@ const authSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
+type AuthFormValues = z.infer<typeof authSchema>;
+
 export default function Auth() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<z.infer<typeof authSchema>>({
+  const form = useForm<AuthFormValues>({
     resolver: zodResolver(authSchema),
     defaultValues: {
       email: "",
@@ -36,12 +38,18 @@ export default function Auth() {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof authSchema>, isSignUp: boolean) => {
+  const onSubmit = async (values: AuthFormValues, isSignUp: boolean) => {
     setIsLoading(true);
     try {
       const { error } = isSignUp
-        ? await supabase.auth.signUp(values)
-        : await supabase.auth.signInWithPassword(values);
+        ? await supabase.auth.signUp({
+            email: values.email,
+            password: values.password,
+          })
+        : await supabase.auth.signInWithPassword({
+            email: values.email,
+            password: values.password,
+          });
 
       if (error) throw error;
 

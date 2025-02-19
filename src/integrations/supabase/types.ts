@@ -9,7 +9,141 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      nft_holdings: {
+        Row: {
+          created_at: string
+          id: string
+          micro_nfts: number
+          project_name: Database["public"]["Enums"]["project_name"]
+          total_nfts: number
+          updated_at: string
+          wallet_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          micro_nfts: number
+          project_name: Database["public"]["Enums"]["project_name"]
+          total_nfts: number
+          updated_at?: string
+          wallet_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          micro_nfts?: number
+          project_name?: Database["public"]["Enums"]["project_name"]
+          total_nfts?: number
+          updated_at?: string
+          wallet_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nft_holdings_wallet_id_fkey"
+            columns: ["wallet_id"]
+            isOneToOne: false
+            referencedRelation: "wallets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          first_name: string
+          id: string
+          last_name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          first_name: string
+          id: string
+          last_name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          first_name?: string
+          id?: string
+          last_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      token_holdings: {
+        Row: {
+          created_at: string
+          id: string
+          piggy_bank_tokens: number
+          project_name: Database["public"]["Enums"]["project_name"]
+          total_tokens: number
+          updated_at: string
+          wallet_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          piggy_bank_tokens: number
+          project_name: Database["public"]["Enums"]["project_name"]
+          total_tokens: number
+          updated_at?: string
+          wallet_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          piggy_bank_tokens?: number
+          project_name?: Database["public"]["Enums"]["project_name"]
+          total_tokens?: number
+          updated_at?: string
+          wallet_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "token_holdings_wallet_id_fkey"
+            columns: ["wallet_id"]
+            isOneToOne: false
+            referencedRelation: "wallets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wallets: {
+        Row: {
+          address: string
+          created_at: string
+          id: string
+          profile_id: string
+          updated_at: string
+        }
+        Insert: {
+          address: string
+          created_at?: string
+          id?: string
+          profile_id: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string
+          created_at?: string
+          id?: string
+          profile_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wallets_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -18,7 +152,23 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      project_name:
+        | "DEBT"
+        | "CHRS"
+        | "ALUM"
+        | "BAUX"
+        | "BGLD"
+        | "OIL"
+        | "DCM"
+        | "DATA"
+        | "DLG"
+        | "GDLG"
+        | "GROW"
+        | "FARM"
+        | "NATG"
+        | "NGAS"
+        | "XPLR"
+        | "EXPL"
     }
     CompositeTypes: {
       [_ in never]: never
