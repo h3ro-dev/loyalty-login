@@ -6,42 +6,50 @@ const projects = [
   {
     oldName: "DEBT",
     newName: "CHRS",
-    imageUrl: "/lovable-uploads/070fbee2-f928-4140-9dfb-4c6f752c659f.png"
+    imageUrl: "/lovable-uploads/070fbee2-f928-4140-9dfb-4c6f752c659f.png",
+    gradientClass: "gradient-chrs"
   },
   {
     oldName: "DLG",
     newName: "DGLD",
-    imageUrl: "/lovable-uploads/c41740a7-9f80-4df5-9083-789e5248aeea.png"
+    imageUrl: "/lovable-uploads/c41740a7-9f80-4df5-9083-789e5248aeea.png",
+    gradientClass: "gradient-dgld"
   },
   {
     oldName: "DCM",
     newName: "Data",
-    imageUrl: "/lovable-uploads/67daa9a8-1866-4384-98c2-9f5011696b0a.png"
+    imageUrl: "/lovable-uploads/67daa9a8-1866-4384-98c2-9f5011696b0a.png",
+    gradientClass: "gradient-data"
   },
   {
     oldName: "ALUM",
     newName: "BAUX",
-    imageUrl: "/lovable-uploads/7a3c20a6-7485-45e6-8320-e98a4fa6db12.png"
+    imageUrl: "/lovable-uploads/7a3c20a6-7485-45e6-8320-e98a4fa6db12.png",
+    gradientClass: "gradient-baux"
   },
   {
     oldName: "XPLR",
     newName: "EXPL",
-    imageUrl: "/lovable-uploads/edd32582-f472-48fc-8ee7-db1de87f784b.png"
+    imageUrl: "/lovable-uploads/edd32582-f472-48fc-8ee7-db1de87f784b.png",
+    gradientClass: "gradient-xprl"
   },
   {
     oldName: "GROW",
     newName: "FARM",
-    imageUrl: "/lovable-uploads/5165e38d-462a-4215-94b3-66aa34954dd3.png"
+    imageUrl: "/lovable-uploads/5165e38d-462a-4215-94b3-66aa34954dd3.png",
+    gradientClass: "gradient-farm"
   },
   {
     oldName: "NATG",
     newName: "NGAS",
-    imageUrl: "/lovable-uploads/0c05b097-c119-46c3-97e0-3b0ed755a624.png"
+    imageUrl: "/lovable-uploads/0c05b097-c119-46c3-97e0-3b0ed755a624.png",
+    gradientClass: "gradient-ngas"
   },
   {
     oldName: "BGLD",
     newName: "Oil",
-    imageUrl: "/lovable-uploads/fbbbb513-115d-4184-97d3-94b2cda2539b.png"
+    imageUrl: "/lovable-uploads/fbbbb513-115d-4184-97d3-94b2cda2539b.png",
+    gradientClass: "gradient-oil"
   }
 ];
 
@@ -76,7 +84,7 @@ export const ProjectTransitions = () => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="font-semibold text-lg"
+                  className={`font-semibold text-lg bg-clip-text text-transparent ${project.gradientClass}`}
                 >
                   {project.newName}
                 </motion.div>

@@ -49,9 +49,36 @@
 
 @layer utilities {
   .text-gradient {
-    @apply bg-gradient-to-r from-[#47D58C] to-[#2AB673] bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-[#2AB673] to-[#47D58C] bg-clip-text text-transparent;
   }
   .bg-gradient {
-    @apply bg-gradient-to-r from-[#47D58C] to-[#2AB673];
+    @apply bg-gradient-to-r from-[#2AB673] to-[#47D58C];
+  }
+  .gradient-baux {
+    @apply bg-gradient-to-r from-[#FF8142] to-[#FFAB7B];
+  }
+  .gradient-data {
+    @apply bg-gradient-to-r from-[#7B42FF] to-[#B27BFF];
+  }
+  .gradient-dgld {
+    @apply bg-gradient-to-r from-[#FFD642] to-[#FFE47B];
+  }
+  .gradient-xprl {
+    @apply bg-gradient-to-r from-[#FF42A1] to-[#FF7BC4];
+  }
+  .gradient-farm {
+    @apply bg-gradient-to-r from-[#D6BA48] to-[#E8D690];
+  }
+  .gradient-ngas {
+    @apply bg-gradient-to-r from-[#4287FF] to-[#7BB1FF];
+  }
+  .gradient-oil {
+    @apply bg-gradient-to-r from-[#8742FF] to-[#B47BFF];
+  }
+  .gradient-chrs {
+    @apply bg-gradient-to-r from-[#42FFAE] to-[#7BFFC9];
+  }
+  .gradient-fish {
+    @apply bg-gradient-to-r from-[#42FFE8] to-[#7BFFF1];
   }
 }
