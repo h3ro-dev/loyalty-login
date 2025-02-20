@@ -12,9 +12,12 @@ interface HoldingsFieldsProps {
 
 export function HoldingsFields({ form }: HoldingsFieldsProps) {
   const handleNumberInput = (e: React.ChangeEvent<HTMLInputElement>, onChange: (value: number) => void) => {
-    // Remove leading zeros and convert to number
     const value = e.target.value.replace(/^0+/, '') || '0';
     onChange(Number(value));
+  };
+
+  const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    e.target.select(); // This will select all text in the input
   };
 
   return (
@@ -46,6 +49,7 @@ export function HoldingsFields({ form }: HoldingsFieldsProps) {
                 {...field}
                 value={field.value || ''}
                 onChange={(e) => handleNumberInput(e, field.onChange)}
+                onFocus={handleFocus}
               />
             </FormControl>
             <FormMessage />
@@ -68,6 +72,7 @@ export function HoldingsFields({ form }: HoldingsFieldsProps) {
                 {...field}
                 value={field.value || ''}
                 onChange={(e) => handleNumberInput(e, field.onChange)}
+                onFocus={handleFocus}
               />
             </FormControl>
             <FormMessage />
@@ -102,6 +107,7 @@ export function HoldingsFields({ form }: HoldingsFieldsProps) {
                 {...field}
                 value={field.value || ''}
                 onChange={(e) => handleNumberInput(e, field.onChange)}
+                onFocus={handleFocus}
               />
             </FormControl>
             <FormMessage />
@@ -124,6 +130,7 @@ export function HoldingsFields({ form }: HoldingsFieldsProps) {
                 {...field}
                 value={field.value || ''}
                 onChange={(e) => handleNumberInput(e, field.onChange)}
+                onFocus={handleFocus}
               />
             </FormControl>
             <FormMessage />
