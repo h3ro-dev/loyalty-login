@@ -25,10 +25,10 @@ export default function BGLDTesting() {
 
   useEffect(() => {
     const fetchAlchemyKey = async () => {
-      const { data: { value }, error } = await supabase
+      const { data, error } = await supabase
         .rpc('get_secret', { secret_name: 'ALCHEMY_API_KEY' });
       
-      if (error) {
+      if (error || !data) {
         console.error('Error fetching Alchemy API key:', error);
         toast({
           variant: "destructive",
@@ -38,7 +38,7 @@ export default function BGLDTesting() {
         return;
       }
       
-      setAlchemyKey(value);
+      setAlchemyKey(data as string);
     };
 
     fetchAlchemyKey();
