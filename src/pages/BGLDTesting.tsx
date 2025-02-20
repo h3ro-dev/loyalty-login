@@ -21,45 +21,45 @@ export default function BGLDTesting() {
   const [address, setAddress] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<TestResult | null>(null);
-  const [alchemyKey, setAlchemyKey] = useState<string | null>(null);
+  const [bscKey, setBscKey] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchAlchemyKey = async () => {
+    const fetchBscKey = async () => {
       try {
-        const { data: ethKey, error: ethError } = await supabase
+        const { data: apiKey, error: keyError } = await supabase
           .rpc('get_secret', { 
-            secret_name: 'ALCHEMY_API_KEY' 
+            secret_name: 'BSC_API_KEY' 
           });
         
-        if (ethError) {
-          throw new Error(`Error fetching Alchemy key: ${ethError.message}`);
+        if (keyError) {
+          throw new Error(`Error fetching BSC key: ${keyError.message}`);
         }
         
-        if (ethKey) {
-          console.log('Successfully fetched Alchemy key');
-          setAlchemyKey(ethKey as string);
+        if (apiKey) {
+          console.log('Successfully fetched BSC key');
+          setBscKey(apiKey as string);
         } else {
-          throw new Error('No Alchemy key found');
+          throw new Error('No BSC API key found');
         }
       } catch (error: any) {
-        console.error('Error in fetchAlchemyKey:', error);
+        console.error('Error in fetchBscKey:', error);
         toast({
           variant: "destructive",
-          title: "Error fetching API key",
+          title: "Error fetching BSC API key",
           description: error.message
         });
       }
     };
 
-    fetchAlchemyKey();
+    fetchBscKey();
   }, []);
 
   const testAddress = async () => {
-    if (!alchemyKey) {
+    if (!bscKey) {
       toast({
         variant: "destructive",
         title: "API Key Missing",
-        description: "Please make sure your Ethereum Alchemy API key is properly set."
+        description: "Please make sure your BSC API key is properly set."
       });
       return;
     }
@@ -69,14 +69,14 @@ export default function BGLDTesting() {
     
     try {
       console.log("Testing address:", address);
-      console.log("Using Alchemy key:", alchemyKey ? "Yes" : "No");
+      console.log("Using BSC key:", bscKey ? "Yes" : "No");
 
-      // Initialize provider with the fetched API key
+      // Initialize provider with BSC endpoint
       const provider = new ethers.providers.JsonRpcProvider(
-        `https://eth-mainnet.g.alchemy.com/v2/${alchemyKey}`
+        `https://bnb-mainnet.g.alchemy.com/v2/${bscKey}`
       );
 
-      // Contract addresses
+      // Contract addresses (same as before since they're on BSC)
       const BGLD_NFT_ADDRESS = "0x3abedba3052845ce3f57818032bfa747cded3fca";
       const BGLD_MICRO_NFT_ADDRESS = "0x935d2fd458fdf41ca227a009180de5bd32a6d116";
       const BGLD_REWARD_DISTRIBUTOR = "0x0c9fa52d7ed12a6316d3738c80931eccc33937dd";
@@ -163,7 +163,7 @@ export default function BGLDTesting() {
     <div className="min-h-screen bg-background p-8">
       <div className="container max-w-4xl mx-auto space-y-8">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight mb-2">BGLD Holdings Test</h1>
+          <h1 className="text-2xl font-bold tracking-tight mb-2">BGLD Holdings Test (BSC)</h1>
           <p className="text-muted-foreground">
             Test wallet addresses and store results in database
           </p>
@@ -173,7 +173,7 @@ export default function BGLDTesting() {
           <CardHeader>
             <CardTitle>Test Address</CardTitle>
             <CardDescription>
-              Enter an Ethereum address to test BGLD holdings
+              Enter an address to test BGLD holdings on BSC
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -185,7 +185,7 @@ export default function BGLDTesting() {
               />
               <Button 
                 onClick={testAddress} 
-                disabled={isLoading || !address || !alchemyKey}
+                disabled={isLoading || !address || !bscKey}
               >
                 {isLoading ? (
                   <>
@@ -201,12 +201,12 @@ export default function BGLDTesting() {
               </Button>
             </div>
 
-            {!alchemyKey && (
+            {!bscKey && (
               <Alert variant="destructive">
                 <X className="h-4 w-4" />
                 <AlertTitle>API Key Missing</AlertTitle>
                 <AlertDescription>
-                  Please make sure your Ethereum Alchemy API key is properly set in Supabase.
+                  Please make sure your BSC API key is properly set in Supabase.
                 </AlertDescription>
               </Alert>
             )}
