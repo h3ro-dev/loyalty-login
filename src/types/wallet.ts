@@ -1,4 +1,6 @@
 
+export type ProjectName = keyof typeof PROJECT_CONVERSIONS;
+
 export interface TokenHolding {
   projectName: string;
   totalTokens: number;

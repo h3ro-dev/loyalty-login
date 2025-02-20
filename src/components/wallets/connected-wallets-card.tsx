@@ -32,16 +32,16 @@ export function ConnectedWalletsCard({ wallets }: ConnectedWalletsCardProps) {
               <div className="space-y-2">
                 <h4 className="text-sm font-medium">Token Holdings</h4>
                 <div className="grid gap-4 md:grid-cols-2">
-                  {wallet.tokenHoldings.map((token) => (
-                    <Card key={token.id}>
+                  {wallet.tokenHoldings.map((token, index) => (
+                    <Card key={`${wallet.id}-token-${index}`}>
                       <CardContent className="p-4">
                         <div className="space-y-2">
-                          <div className="font-medium">{token.project_name}</div>
+                          <div className="font-medium">{token.projectName}</div>
                           <div className="text-sm text-muted-foreground">
-                            Total: {token.total_tokens}
+                            Total: {token.totalTokens}
                           </div>
                           <div className="text-sm text-muted-foreground">
-                            Piggy Bank: {token.piggy_bank_tokens}
+                            Piggy Bank: {token.piggyBankTokens}
                           </div>
                         </div>
                       </CardContent>
@@ -55,16 +55,16 @@ export function ConnectedWalletsCard({ wallets }: ConnectedWalletsCardProps) {
               <div className="space-y-2">
                 <h4 className="text-sm font-medium">NFT Holdings</h4>
                 <div className="grid gap-4 md:grid-cols-2">
-                  {wallet.nftHoldings.map((nft) => (
-                    <Card key={nft.id}>
+                  {wallet.nftHoldings.map((nft, index) => (
+                    <Card key={`${wallet.id}-nft-${index}`}>
                       <CardContent className="p-4">
                         <div className="space-y-2">
-                          <div className="font-medium">{nft.project_name}</div>
+                          <div className="font-medium">{nft.projectName}</div>
                           <div className="text-sm text-muted-foreground">
-                            Total: {nft.total_nfts}
+                            Total: {nft.totalNFTs}
                           </div>
                           <div className="text-sm text-muted-foreground">
-                            Micro NFTs: {nft.micro_nfts}
+                            Micro NFTs: {nft.microNFTs}
                           </div>
                         </div>
                       </CardContent>

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -6,7 +5,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { ProjectName } from "@/types/wallet";
+import { PROJECT_CONVERSIONS } from "@/types/wallet";
 
 const walletSchema = z.object({
   address: z.string().min(42, "Invalid wallet address").max(42, "Invalid wallet address"),

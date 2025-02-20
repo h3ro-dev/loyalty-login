@@ -5,10 +5,10 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { ProjectName } from "@/types/wallet";
+import { PROJECT_CONVERSIONS } from "@/types/wallet";
 
 const holdingsSchema = z.object({
-  project_name: z.enum(["DEBT", "CHRS", "ALUM", "BAUX", "BGLD", "OIL", "DCM", "DATA", "DLG", "GDLG", "GROW", "FARM", "NATG", "NGAS", "XPLR", "EXPL"]),
+  project_name: z.enum(Object.keys(PROJECT_CONVERSIONS) as [string, ...string[]]),
   total_nfts: z.number().min(0, "Must be 0 or greater"),
   micro_nfts: z.number().min(0, "Must be 0 or greater"),
   total_tokens: z.number().min(0, "Must be 0 or greater"),

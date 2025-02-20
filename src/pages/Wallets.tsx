@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,20 +7,7 @@ import { toast } from "@/hooks/use-toast";
 import { ConnectWalletCard } from "@/components/wallets/connect-wallet-card";
 import { RecordHoldingsCard } from "@/components/wallets/record-holdings-card";
 import { ConnectedWalletsCard } from "@/components/wallets/connected-wallets-card";
-
-interface TokenHolding {
-  id: string;
-  project_name: string;
-  total_tokens: number;
-  piggy_bank_tokens: number;
-}
-
-interface NFTHolding {
-  id: string;
-  project_name: string;
-  total_nfts: number;
-  micro_nfts: number;
-}
+import { TokenHolding, NFTHolding } from "@/types/wallet";
 
 interface Wallet {
   id: string;
@@ -79,8 +65,16 @@ export default function Wallets() {
 
           return {
             ...wallet,
-            tokenHoldings: tokenHoldings || [],
-            nftHoldings: nftHoldings || [],
+            tokenHoldings: (tokenHoldings || []).map(th => ({
+              projectName: th.project_name,
+              totalTokens: th.total_tokens,
+              piggyBankTokens: th.piggy_bank_tokens
+            })),
+            nftHoldings: (nftHoldings || []).map(nh => ({
+              projectName: nh.project_name,
+              totalNFTs: nh.total_nfts,
+              microNFTs: nh.micro_nfts
+            }))
           };
         })
       );
