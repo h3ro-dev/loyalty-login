@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Bug, Check, Terminal, X, Loader } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { ethers } from "ethers";
+import { toast } from "@/hooks/use-toast";
 
 interface TestResult {
   address: string;
@@ -26,20 +28,81 @@ export default function BGLDTesting() {
     
     try {
       console.log("Testing address:", address);
-      const { data, error } = await supabase.functions.invoke('query-bgld-holdings', {
-        body: { 
-          address,
-          blockNumber: 41745797 // Specific block number for snapshot
-        }
-      });
 
-      if (error) throw error;
+      // Initialize provider
+      const provider = new ethers.providers.JsonRpcProvider(
+        "https://eth-mainnet.g.alchemy.com/v2/your-api-key" // Replace with env variable in production
+      );
 
-      console.log("Result:", data);
-      setResult({
+      // Contract addresses
+      const BGLD_NFT_ADDRESS = "0x3abedba3052845ce3f57818032bfa747cded3fca";
+      const BGLD_MICRO_NFT_ADDRESS = "0x935d2fd458fdf41ca227a009180de5bd32a6d116";
+      const BGLD_REWARD_DISTRIBUTOR = "0x0c9fa52d7ed12a6316d3738c80931eccc33937dd";
+      const BGLD_REWARD_DISTRIBUTOR_DIAMOND = "0xf751d2849b3659c81f3724814d5a8defb0bb8ad2";
+
+      // Contract ABIs
+      const erc721ABI = [
+        "function balanceOf(address owner) view returns (uint256)",
+        "function calculatePendingRewards(address user) view returns (uint256)"
+      ];
+
+      const erc20ABI = [
+        "function balanceOf(address owner) view returns (uint256)",
+        "function decimals() view returns (uint8)"
+      ];
+
+      // Create contract instances
+      const bgldNFT = new ethers.Contract(BGLD_NFT_ADDRESS, erc721ABI, provider);
+      const bgldMicroNFT = new ethers.Contract(BGLD_MICRO_NFT_ADDRESS, erc20ABI, provider);
+      const legacyRewardDistributor = new ethers.Contract(BGLD_REWARD_DISTRIBUTOR, erc721ABI, provider);
+      const diamondRewardDistributor = new ethers.Contract(BGLD_REWARD_DISTRIBUTOR_DIAMOND, erc721ABI, provider);
+
+      // Query balances
+      console.log("Querying balances...");
+      const nftBalance = await bgldNFT.balanceOf(address);
+      const microNFTBalance = await bgldMicroNFT.balanceOf(address);
+      const microDecimals = await bgldMicroNFT.decimals();
+      
+      // Query rewards
+      console.log("Querying rewards...");
+      const legacyRewards = await legacyRewardDistributor.calculatePendingRewards(address)
+        .catch(() => ethers.BigNumber.from(0));
+      const diamondRewards = await diamondRewardDistributor.calculatePendingRewards(address)
+        .catch(() => ethers.BigNumber.from(0));
+
+      // Calculate final values
+      const totalRewards = legacyRewards.add(diamondRewards);
+      const microNFTBalanceAdjusted = Number(ethers.utils.formatUnits(microNFTBalance, microDecimals));
+
+      const holdings: TestResult = {
         address,
-        ...data
-      });
+        total_nfts: nftBalance.toNumber(),
+        micro_nfts: microNFTBalanceAdjusted,
+        pending_rewards: Number(ethers.utils.formatEther(totalRewards))
+      };
+
+      console.log("Holdings:", holdings);
+      setResult(holdings);
+
+      // Store results in database
+      const { error: dbError } = await supabase
+        .from('nft_holdings')
+        .upsert({
+          wallet_id: address,
+          project_name: 'BGLD',
+          total_nfts: holdings.total_nfts,
+          micro_nfts: holdings.micro_nfts
+        });
+
+      if (dbError) {
+        console.error("Error storing results:", dbError);
+        toast({
+          variant: "destructive",
+          title: "Error storing results",
+          description: dbError.message
+        });
+      }
+
     } catch (error: any) {
       console.error("Error testing address:", error);
       setResult({
@@ -60,7 +123,7 @@ export default function BGLDTesting() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight mb-2">BGLD Holdings Test</h1>
           <p className="text-muted-foreground">
-            Test wallet addresses against block 41745797 snapshot
+            Test wallet addresses and store results in database
           </p>
         </div>
 
