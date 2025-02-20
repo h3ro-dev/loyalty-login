@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -25,9 +26,10 @@ export default function BGLDTesting() {
   useEffect(() => {
     const fetchBscKey = async () => {
       try {
+        console.log('Fetching BSC API key...');
         const { data: apiKey, error: keyError } = await supabase
           .rpc('get_secret', { 
-            secret_name: 'Alchemy-API-BSC' 
+            secret_name: 'BSC_API_KEY'  // Changed from 'Alchemy-API-BSC' to match the Supabase secret name
           });
         
         if (keyError) {
