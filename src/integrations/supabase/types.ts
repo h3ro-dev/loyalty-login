@@ -117,6 +117,7 @@ export type Database = {
           address: string
           created_at: string
           id: string
+          nickname: string | null
           profile_id: string
           updated_at: string
         }
@@ -124,6 +125,7 @@ export type Database = {
           address: string
           created_at?: string
           id?: string
+          nickname?: string | null
           profile_id: string
           updated_at?: string
         }
@@ -131,6 +133,7 @@ export type Database = {
           address?: string
           created_at?: string
           id?: string
+          nickname?: string | null
           profile_id?: string
           updated_at?: string
         }

@@ -13,6 +13,7 @@ import { TokenHolding, NFTHolding } from "@/types/wallet";
 interface Wallet {
   id: string;
   address: string;
+  nickname: string;
   tokenHoldings: TokenHolding[];
   nftHoldings: NFTHolding[];
 }
@@ -83,7 +84,6 @@ export default function Wallets() {
       console.log("Fetched wallets:", walletsWithHoldings);
       setWallets(walletsWithHoldings);
       
-      // If there's no selected wallet and we have wallets, select the first one
       if (!selectedWallet && walletsWithHoldings.length > 0) {
         setSelectedWallet(walletsWithHoldings[0].id);
       }
@@ -143,7 +143,10 @@ export default function Wallets() {
               wallets={wallets}
               onHoldingsUpdated={fetchWallets}
             />
-            <ConnectedWalletsCard wallets={wallets} />
+            <ConnectedWalletsCard 
+              wallets={wallets} 
+              onWalletUpdated={fetchWallets}
+            />
           </>
         )}
       </div>
