@@ -26,28 +26,46 @@ export default function BGLDTesting() {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<TestResult | null>(null);
   const [alchemyKey, setAlchemyKey] = useState<string | null>(null);
+  const [alchemyBscKey, setAlchemyBscKey] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchAlchemyKey = async () => {
-      const { data, error } = await supabase
+    const fetchAlchemyKeys = async () => {
+      // Fetch ETH Alchemy Key
+      const { data: ethKey, error: ethError } = await supabase
         .rpc('get_secret', { 
           secret_name: 'ALCHEMY_API_KEY' 
         });
       
-      if (error || !data) {
-        console.error('Error fetching Alchemy API key:', error);
+      if (ethError || !ethKey) {
+        console.error('Error fetching ETH Alchemy API key:', ethError);
         toast({
           variant: "destructive",
-          title: "Error fetching API key",
-          description: "Please make sure your Alchemy API key is properly set."
+          title: "Error fetching ETH API key",
+          description: "Please make sure your Ethereum Alchemy API key is properly set."
         });
-        return;
+      } else {
+        setAlchemyKey(ethKey as string);
       }
+
+      // Fetch BSC Alchemy Key
+      const { data: bscKey, error: bscError } = await supabase
+        .rpc('get_secret', { 
+          secret_name: 'Alchemy-API-BSC' 
+        });
       
-      setAlchemyKey(data as string);
+      if (bscError || !bscKey) {
+        console.error('Error fetching BSC Alchemy API key:', bscError);
+        toast({
+          variant: "destructive",
+          title: "Error fetching BSC API key",
+          description: "Please make sure your BSC Alchemy API key is properly set."
+        });
+      } else {
+        setAlchemyBscKey(bscKey as string);
+      }
     };
 
-    fetchAlchemyKey();
+    fetchAlchemyKeys();
   }, []);
 
   const testAddress = async () => {
