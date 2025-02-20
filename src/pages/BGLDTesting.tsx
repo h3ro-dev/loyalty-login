@@ -24,47 +24,35 @@ export default function BGLDTesting() {
   const [bscKey, setBscKey] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchBscKey = async () => {
-      try {
-        console.log('Fetching BSC API key...');
-        const { data: apiKey, error: keyError } = await supabase
-          .rpc('get_secret', { 
-            secret_name: 'BSC_API_KEY'  // Changed from 'Alchemy-API-BSC' to match the Supabase secret name
-          });
-        
-        if (keyError) {
-          console.error('Error fetching BSC key:', keyError);
-          toast({
-            variant: "destructive",
-            title: "API Key Error",
-            description: "Failed to fetch the BSC API key."
-          });
-          return;
-        }
-        
-        if (apiKey) {
-          console.log('Successfully fetched BSC key');
-          setBscKey(apiKey as string);
-        } else {
-          console.error('BSC API key not found');
-          toast({
-            variant: "destructive",
-            title: "API Key Not Found",
-            description: "BSC API key not found in Supabase settings."
-          });
-        }
-      } catch (error: any) {
-        console.error('Error in fetchBscKey:', error);
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "An unexpected error occurred while fetching the API key."
-        });
-      }
-    };
-
     fetchBscKey();
   }, []);
+
+  const fetchBscKey = async () => {
+    const { data: apiKey, error: keyError } = await supabase
+      .rpc('get_secret', { 
+        secret_name: 'BSC_API_KEY'
+      });
+    
+    if (keyError) {
+      console.error('Error fetching BSC key:', keyError);
+      toast({
+        variant: "destructive",
+        title: "API Key Error",
+        description: "Failed to fetch the BSC API key."
+      });
+      return;
+    }
+    
+    if (apiKey) {
+      setBscKey(apiKey as string);
+    } else {
+      toast({
+        variant: "destructive",
+        title: "API Key Not Found",
+        description: "BSC API key not found in Supabase settings."
+      });
+    }
+  };
 
   const testAddress = async () => {
     if (!bscKey) {
@@ -80,15 +68,11 @@ export default function BGLDTesting() {
     setResult(null);
     
     try {
-      console.log("Testing address:", address);
-      console.log("Using BSC key:", bscKey ? "Yes" : "No");
-
-      // Initialize provider with BSC endpoint
       const provider = new ethers.providers.JsonRpcProvider(
         `https://bnb-mainnet.g.alchemy.com/v2/${bscKey}`
       );
 
-      // Contract addresses (same as before since they're on BSC)
+      // Contract addresses
       const BGLD_NFT_ADDRESS = "0x3abedba3052845ce3f57818032bfa747cded3fca";
       const BGLD_MICRO_NFT_ADDRESS = "0x935d2fd458fdf41ca227a009180de5bd32a6d116";
       const BGLD_REWARD_DISTRIBUTOR = "0x0c9fa52d7ed12a6316d3738c80931eccc33937dd";
@@ -111,18 +95,22 @@ export default function BGLDTesting() {
       const legacyRewardDistributor = new ethers.Contract(BGLD_REWARD_DISTRIBUTOR, erc721ABI, provider);
       const diamondRewardDistributor = new ethers.Contract(BGLD_REWARD_DISTRIBUTOR_DIAMOND, erc721ABI, provider);
 
-      // Query balances
-      console.log("Querying balances...");
-      const nftBalance = await bgldNFT.balanceOf(address);
-      const microNFTBalance = await bgldMicroNFT.balanceOf(address);
-      const microDecimals = await bgldMicroNFT.decimals();
-      
-      // Query rewards
-      console.log("Querying rewards...");
-      const legacyRewards = await legacyRewardDistributor.calculatePendingRewards(address)
-        .catch(() => ethers.BigNumber.from(0));
-      const diamondRewards = await diamondRewardDistributor.calculatePendingRewards(address)
-        .catch(() => ethers.BigNumber.from(0));
+      // Query balances and rewards
+      const [
+        nftBalance,
+        microNFTBalance,
+        microDecimals,
+        legacyRewards,
+        diamondRewards
+      ] = await Promise.all([
+        bgldNFT.balanceOf(address),
+        bgldMicroNFT.balanceOf(address),
+        bgldMicroNFT.decimals(),
+        legacyRewardDistributor.calculatePendingRewards(address)
+          .catch(() => ethers.BigNumber.from(0)),
+        diamondRewardDistributor.calculatePendingRewards(address)
+          .catch(() => ethers.BigNumber.from(0))
+      ]);
 
       // Calculate final values
       const totalRewards = legacyRewards.add(diamondRewards);
@@ -135,7 +123,6 @@ export default function BGLDTesting() {
         pending_rewards: Number(ethers.utils.formatEther(totalRewards))
       };
 
-      console.log("Holdings:", holdings);
       setResult(holdings);
 
       // Store results in database
@@ -149,7 +136,6 @@ export default function BGLDTesting() {
         });
 
       if (dbError) {
-        console.error("Error storing results:", dbError);
         toast({
           variant: "destructive",
           title: "Error storing results",
@@ -158,7 +144,6 @@ export default function BGLDTesting() {
       }
 
     } catch (error: any) {
-      console.error("Error testing address:", error);
       setResult({
         address,
         total_nfts: 0,
