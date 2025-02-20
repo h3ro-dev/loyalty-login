@@ -1,14 +1,13 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
+import { Form, FormDescription } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { HelpCircle } from "lucide-react";
 import { useHoldingsForm } from "@/hooks/use-holdings-form";
 import { TokenHolding, NFTHolding } from "@/types/wallet";
 import { useEffect } from "react";
+import { WalletSelect } from "./holdings/wallet-select";
+import { ProjectSelect } from "./holdings/project-select";
+import { HoldingsFields } from "./holdings/holdings-fields";
 
 interface RecordHoldingsCardProps {
   selectedWallet: string | null;
@@ -20,17 +19,6 @@ interface RecordHoldingsCardProps {
   }>;
   onHoldingsUpdated: () => void;
 }
-
-const projectOptions: { value: string; label: string }[] = [
-  { value: "DEBT", label: "DEBT" },
-  { value: "DLG", label: "DLG" },
-  { value: "ALUM", label: "ALUM" },
-  { value: "XPLR", label: "XPLR" },
-  { value: "BGLD", label: "BGLD" },
-  { value: "NATG", label: "NATG" },
-  { value: "DCM", label: "DCM" },
-  { value: "GROW", label: "GROW" },
-];
 
 export function RecordHoldingsCard({ selectedWallet, wallets, onHoldingsUpdated }: RecordHoldingsCardProps) {
   const { form, isLoading, onSubmit, loadHoldings } = useHoldingsForm();
@@ -73,6 +61,12 @@ export function RecordHoldingsCard({ selectedWallet, wallets, onHoldingsUpdated 
     }
   };
 
+  const handleWalletSelect = (value: string) => {
+    form.reset();
+    handleProjectChange(form.getValues("project_name"));
+    onHoldingsUpdated();
+  };
+
   const handleSubmit = async (values: any) => {
     if (!selectedWallet) return;
     const success = await onSubmit(values, selectedWallet);
@@ -90,152 +84,17 @@ export function RecordHoldingsCard({ selectedWallet, wallets, onHoldingsUpdated 
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <Select
-          value={selectedWallet || ""}
-          onValueChange={(value) => {
-            form.reset();
-            handleProjectChange(form.getValues("project_name"));
-            onHoldingsUpdated();
-          }}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select a wallet" />
-          </SelectTrigger>
-          <SelectContent>
-            {wallets.map((wallet) => (
-              <SelectItem key={wallet.id} value={wallet.id}>
-                {wallet.address}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <WalletSelect
+          selectedWallet={selectedWallet}
+          wallets={wallets}
+          onWalletSelect={handleWalletSelect}
+        />
 
         {selectedWallet && (
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="project_name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Project</FormLabel>
-                    <Select
-                      value={field.value}
-                      onValueChange={handleProjectChange}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a project" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {projectOptions.map((project) => (
-                          <SelectItem key={project.value} value={project.value}>
-                            {project.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="grid gap-4 md:grid-cols-2">
-                <FormField
-                  control={form.control}
-                  name="total_nfts"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center gap-2">
-                        Total NFTs
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger>
-                              <HelpCircle className="h-4 w-4" />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Include both staked and unstaked NFTs</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          {...field}
-                          onChange={e => field.onChange(Number(e.target.value))}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="micro_nfts"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Micro NFTs</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          {...field}
-                          onChange={e => field.onChange(Number(e.target.value))}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="total_tokens"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center gap-2">
-                        Tokens in Wallet
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger>
-                              <HelpCircle className="h-4 w-4" />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Total tokens in your wallet and piggy bank</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          {...field}
-                          onChange={e => field.onChange(Number(e.target.value))}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="piggy_bank_tokens"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Piggy Bank Tokens</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          {...field}
-                          onChange={e => field.onChange(Number(e.target.value))}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+              <ProjectSelect form={form} onProjectChange={handleProjectChange} />
+              <HoldingsFields form={form} />
 
               <FormDescription className="text-sm text-muted-foreground">
                 Note: All wallet holdings will be verified against the blockchain snapshot taken when the ecosystem was shut off. If the numbers don't match, the system will use the on-chain data.
