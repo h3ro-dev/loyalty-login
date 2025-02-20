@@ -33,18 +33,27 @@ serve(async (req) => {
     }
 
     console.log('Initializing provider...');
-    const provider = new ethers.providers.JsonRpcProvider(
-      `https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_KEY}`
+    
+    // Create a custom network configuration
+    const network = {
+      name: 'mainnet',
+      chainId: 1,
+      ensAddress: '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e'
+    };
+
+    // Initialize provider with explicit network configuration
+    const provider = new ethers.providers.StaticJsonRpcProvider(
+      `https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_KEY}`,
+      network
     );
 
-    // Test provider connection
-    console.log('Testing provider connection...');
+    console.log('Provider initialized, testing connection...');
     try {
-      const network = await provider.getNetwork();
-      console.log('Connected to network:', network.name);
+      const blockNumber = await provider.getBlockNumber();
+      console.log('Connected to network, current block:', blockNumber);
     } catch (error) {
-      console.error('Provider connection error:', error);
-      throw new Error(`Provider connection failed: ${error.message}`);
+      console.error('Provider connection test failed:', error);
+      throw new Error(`Provider connection test failed: ${error.message}`);
     }
 
     const BGLD_NFT_ADDRESS = "0x3abedba3052845ce3f57818032bfa747cded3fca";
