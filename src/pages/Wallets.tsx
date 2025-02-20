@@ -205,20 +205,22 @@ export default function Wallets() {
         });
       }
 
-      const { error } = await supabase
+      const { data: walletData, error: walletError } = await supabase
         .from("wallets")
         .insert({
           address: values.address,
           profile_id: user.id,
-        });
+        })
+        .select()
+        .single();
 
-      if (error) throw error;
+      if (walletError) throw walletError;
 
-      if (onChainData) {
+      if (onChainData && walletData) {
         const { error: nftError } = await supabase
           .from("nft_holdings")
           .insert({
-            wallet_id: error?.id,
+            wallet_id: walletData.id,
             project_name: 'BGLD',
             total_nfts: onChainData.total_nfts,
             micro_nfts: onChainData.micro_nfts,
