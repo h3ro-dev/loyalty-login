@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -36,14 +37,12 @@ export function RecordHoldingsCard({ selectedWallet, wallets, onHoldingsUpdated 
 
   useEffect(() => {
     if (selectedWallet) {
-      console.log("Selected wallet changed:", selectedWallet);
       const currentWallet = wallets.find(w => w.id === selectedWallet);
       if (currentWallet) {
         const projectName = form.getValues("project_name");
         const tokenHolding = currentWallet.tokenHoldings.find(th => th.projectName === projectName);
         const nftHolding = currentWallet.nftHoldings.find(nh => nh.projectName === projectName);
         
-        console.log("Loading holdings for wallet:", currentWallet.address);
         loadHoldings({
           project_name: projectName,
           total_tokens: tokenHolding?.totalTokens || 0,
@@ -56,7 +55,6 @@ export function RecordHoldingsCard({ selectedWallet, wallets, onHoldingsUpdated 
   }, [selectedWallet, wallets]);
 
   const handleProjectChange = (value: string) => {
-    console.log("Project changed:", value);
     form.setValue("project_name", value);
     if (selectedWallet) {
       const currentWallet = wallets.find(w => w.id === selectedWallet);
@@ -95,8 +93,8 @@ export function RecordHoldingsCard({ selectedWallet, wallets, onHoldingsUpdated 
         <Select
           value={selectedWallet || ""}
           onValueChange={(value) => {
-            console.log("Wallet selected:", value);
             form.reset();
+            handleProjectChange(form.getValues("project_name"));
             onHoldingsUpdated();
           }}
         >
