@@ -82,6 +82,11 @@ export default function Wallets() {
 
       console.log("Fetched wallets:", walletsWithHoldings);
       setWallets(walletsWithHoldings);
+      
+      // If there's no selected wallet and we have wallets, select the first one
+      if (!selectedWallet && walletsWithHoldings.length > 0) {
+        setSelectedWallet(walletsWithHoldings[0].id);
+      }
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -94,6 +99,11 @@ export default function Wallets() {
   useEffect(() => {
     fetchWallets();
   }, []);
+
+  const handleWalletSelect = (walletId: string) => {
+    console.log("Setting selected wallet to:", walletId);
+    setSelectedWallet(walletId);
+  };
 
   return (
     <div className="min-h-screen bg-background">
