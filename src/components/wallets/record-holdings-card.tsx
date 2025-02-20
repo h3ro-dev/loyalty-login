@@ -14,13 +14,15 @@ interface RecordHoldingsCardProps {
   wallets: Array<{
     id: string;
     address: string;
+    nickname: string;
     tokenHoldings: TokenHolding[];
     nftHoldings: NFTHolding[];
   }>;
   onHoldingsUpdated: () => void;
+  onWalletSelect: (value: string) => void;
 }
 
-export function RecordHoldingsCard({ selectedWallet, wallets, onHoldingsUpdated }: RecordHoldingsCardProps) {
+export function RecordHoldingsCard({ selectedWallet, wallets, onHoldingsUpdated, onWalletSelect }: RecordHoldingsCardProps) {
   const { form, isLoading, onSubmit, loadHoldings } = useHoldingsForm();
 
   useEffect(() => {
@@ -68,14 +70,6 @@ export function RecordHoldingsCard({ selectedWallet, wallets, onHoldingsUpdated 
     }
   };
 
-  const handleWalletSelect = (value: string) => {
-    console.log("Wallet selected:", value);
-    // Reset form and update project data for the new wallet
-    form.reset();
-    handleProjectChange(form.getValues("project_name"));
-    onHoldingsUpdated();
-  };
-
   const handleSubmit = async (values: any) => {
     if (!selectedWallet) return;
     console.log("Submitting holdings:", values);
@@ -97,7 +91,7 @@ export function RecordHoldingsCard({ selectedWallet, wallets, onHoldingsUpdated 
         <WalletSelect
           selectedWallet={selectedWallet}
           wallets={wallets}
-          onWalletSelect={handleWalletSelect}
+          onWalletSelect={onWalletSelect}
         />
 
         {selectedWallet && (

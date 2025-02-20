@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -65,7 +66,9 @@ export default function Wallets() {
           ]);
 
           return {
-            ...wallet,
+            id: wallet.id,
+            address: wallet.address,
+            nickname: wallet.nickname || wallet.address.slice(0, 6),
             tokenHoldings: (tokenHoldings || []).map(th => ({
               projectName: th.project_name,
               totalTokens: th.total_tokens,
