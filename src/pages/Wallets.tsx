@@ -47,7 +47,7 @@ export default function Wallets() {
 
       const { data: walletsData, error: walletsError } = await supabase
         .from("wallets")
-        .select("id, address, nickname, profile_id")
+        .select("id, address, profile_id")
         .eq("profile_id", user.id);
 
       if (walletsError) throw walletsError;
@@ -68,7 +68,7 @@ export default function Wallets() {
           return {
             id: wallet.id,
             address: wallet.address,
-            nickname: wallet.nickname || wallet.address.slice(0, 6),
+            nickname: `${wallet.address.slice(0, 6)}...${wallet.address.slice(-4)}`,
             tokenHoldings: (tokenHoldings || []).map(th => ({
               projectName: th.project_name,
               totalTokens: th.total_tokens,
