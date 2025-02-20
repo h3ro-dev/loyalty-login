@@ -1,1 +1,4 @@
+
 project_id = "izlikjpvfcstfytphipa"
+[functions.query-bgld-holdings]
+verify_jwt = false
