@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -79,6 +80,7 @@ export default function Wallets() {
         })
       );
 
+      console.log("Fetched wallets:", walletsWithHoldings);
       setWallets(walletsWithHoldings);
     } catch (error: any) {
       toast({

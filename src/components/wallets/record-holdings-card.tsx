@@ -24,12 +24,18 @@ export function RecordHoldingsCard({ selectedWallet, wallets, onHoldingsUpdated 
   const { form, isLoading, onSubmit, loadHoldings } = useHoldingsForm();
 
   useEffect(() => {
+    console.log("Selected wallet changed:", selectedWallet);
     if (selectedWallet) {
       const currentWallet = wallets.find(w => w.id === selectedWallet);
+      console.log("Current wallet:", currentWallet);
       if (currentWallet) {
         const projectName = form.getValues("project_name");
         const tokenHolding = currentWallet.tokenHoldings.find(th => th.projectName === projectName);
         const nftHolding = currentWallet.nftHoldings.find(nh => nh.projectName === projectName);
+        
+        console.log("Loading holdings for project:", projectName);
+        console.log("Token holdings:", tokenHolding);
+        console.log("NFT holdings:", nftHolding);
         
         loadHoldings({
           project_name: projectName,
@@ -43,6 +49,7 @@ export function RecordHoldingsCard({ selectedWallet, wallets, onHoldingsUpdated 
   }, [selectedWallet, wallets]);
 
   const handleProjectChange = (value: string) => {
+    console.log("Project changed to:", value);
     form.setValue("project_name", value);
     if (selectedWallet) {
       const currentWallet = wallets.find(w => w.id === selectedWallet);
@@ -62,6 +69,8 @@ export function RecordHoldingsCard({ selectedWallet, wallets, onHoldingsUpdated 
   };
 
   const handleWalletSelect = (value: string) => {
+    console.log("Wallet selected:", value);
+    // Reset form and update project data for the new wallet
     form.reset();
     handleProjectChange(form.getValues("project_name"));
     onHoldingsUpdated();
@@ -69,6 +78,7 @@ export function RecordHoldingsCard({ selectedWallet, wallets, onHoldingsUpdated 
 
   const handleSubmit = async (values: any) => {
     if (!selectedWallet) return;
+    console.log("Submitting holdings:", values);
     const success = await onSubmit(values, selectedWallet);
     if (success) {
       onHoldingsUpdated();
