@@ -166,6 +166,22 @@ export default function Wallets() {
     }
   };
 
+  const fetchOnChainData = async (address: string, project: ProjectName) => {
+    if (project !== 'BGLD') return null;
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('query-bgld-holdings', {
+        body: { address }
+      });
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error fetching on-chain data:', error);
+      return null;
+    }
+  };
+
   useEffect(() => {
     fetchWallets();
   }, []);
@@ -180,6 +196,15 @@ export default function Wallets() {
         return;
       }
 
+      const onChainData = await fetchOnChainData(values.address, 'BGLD');
+      
+      if (onChainData) {
+        toast({
+          title: "On-chain data found",
+          description: "We've detected your BGLD holdings from the blockchain.",
+        });
+      }
+
       const { error } = await supabase
         .from("wallets")
         .insert({
@@ -188,6 +213,19 @@ export default function Wallets() {
         });
 
       if (error) throw error;
+
+      if (onChainData) {
+        const { error: nftError } = await supabase
+          .from("nft_holdings")
+          .insert({
+            wallet_id: error?.id,
+            project_name: 'BGLD',
+            total_nfts: onChainData.total_nfts,
+            micro_nfts: onChainData.micro_nfts,
+          });
+
+        if (nftError) throw nftError;
+      }
 
       toast({
         title: "Wallet added",
