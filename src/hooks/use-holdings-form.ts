@@ -34,18 +34,20 @@ export function useHoldingsForm() {
   const onSubmit = async (values: HoldingsFormValues, walletId: string) => {
     setIsLoading(true);
     try {
+      const projectName = values.project_name as keyof typeof PROJECT_CONVERSIONS;
+      
       const [{ data: existingTokenHoldings }, { data: existingNFTHoldings }] = await Promise.all([
         supabase
           .from("token_holdings")
           .select("id")
           .eq("wallet_id", walletId)
-          .eq("project_name", values.project_name)
+          .eq("project_name", projectName)
           .maybeSingle(),
         supabase
           .from("nft_holdings")
           .select("id")
           .eq("wallet_id", walletId)
-          .eq("project_name", values.project_name)
+          .eq("project_name", projectName)
           .maybeSingle(),
       ]);
 
@@ -64,7 +66,7 @@ export function useHoldingsForm() {
           .from("token_holdings")
           .insert({
             wallet_id: walletId,
-            project_name: values.project_name as keyof typeof PROJECT_CONVERSIONS,
+            project_name: projectName,
             total_tokens: values.total_tokens,
             piggy_bank_tokens: values.piggy_bank_tokens,
           });
@@ -87,7 +89,7 @@ export function useHoldingsForm() {
           .from("nft_holdings")
           .insert({
             wallet_id: walletId,
-            project_name: values.project_name as keyof typeof PROJECT_CONVERSIONS,
+            project_name: projectName,
             total_nfts: values.total_nfts,
             micro_nfts: values.micro_nfts,
           });
