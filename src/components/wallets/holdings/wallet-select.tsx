@@ -6,6 +6,7 @@ interface WalletSelectProps {
   wallets: Array<{
     id: string;
     address: string;
+    nickname: string;
   }>;
   onWalletSelect: (value: string) => void;
 }
@@ -17,12 +18,14 @@ export function WalletSelect({ selectedWallet, wallets, onWalletSelect }: Wallet
       onValueChange={onWalletSelect}
     >
       <SelectTrigger>
-        <SelectValue placeholder="Select a wallet" />
+        <SelectValue placeholder="Select a wallet">
+          {selectedWallet && wallets.find(w => w.id === selectedWallet)?.nickname}
+        </SelectValue>
       </SelectTrigger>
       <SelectContent>
         {wallets.map((wallet) => (
           <SelectItem key={wallet.id} value={wallet.id}>
-            {wallet.address}
+            {wallet.nickname} ({wallet.address.slice(0, 6)}...{wallet.address.slice(-4)})
           </SelectItem>
         ))}
       </SelectContent>

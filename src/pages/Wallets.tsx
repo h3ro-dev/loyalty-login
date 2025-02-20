@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -142,6 +141,7 @@ export default function Wallets() {
               selectedWallet={selectedWallet}
               wallets={wallets}
               onHoldingsUpdated={fetchWallets}
+              onWalletSelect={handleWalletSelect}
             />
             <ConnectedWalletsCard 
               wallets={wallets} 
