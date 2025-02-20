@@ -106,7 +106,6 @@ export function useHoldingsForm() {
         description: `Your holdings have been successfully ${existingTokenHoldings || existingNFTHoldings ? "updated" : "recorded"}.`,
       });
       
-      form.reset();
       return true;
     } catch (error: any) {
       toast({
