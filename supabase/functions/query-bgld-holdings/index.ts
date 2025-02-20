@@ -1,6 +1,5 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1'
 import { ethers } from 'https://esm.sh/ethers@5.7.2'
 
 const corsHeaders = {
@@ -15,7 +14,6 @@ interface BGLDHoldings {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
@@ -27,15 +25,12 @@ serve(async (req) => {
       throw new Error('Invalid Ethereum address')
     }
 
-    // Initialize providers and contracts
     const provider = new ethers.providers.JsonRpcProvider(
       "https://eth-mainnet.g.alchemy.com/v2/" + Deno.env.get("ALCHEMY_API_KEY")
     )
 
-    // ABI fragments for the functions we need
     const erc721ABI = [
       "function balanceOf(address owner) view returns (uint256)",
-      "function ownerOf(uint256 tokenId) view returns (address)",
       "function calculatePendingRewards(address user) view returns (uint256)"
     ]
 
@@ -44,13 +39,12 @@ serve(async (req) => {
       "function decimals() view returns (uint8)"
     ]
 
-    // Contract addresses (these should be environment variables in production)
-    const BGLD_NFT_ADDRESS = "0x..." // BlackGold NFT address
-    const BGLD_MICRO_NFT_ADDRESS = "0x..." // BlackGold Micro NFT address
-    const BGLD_REWARD_DISTRIBUTOR = "0x..." // Legacy reward distributor
-    const BGLD_REWARD_DISTRIBUTOR_DIAMOND = "0x..." // Diamond reward distributor
+    // Update with actual contract addresses
+    const BGLD_NFT_ADDRESS = "0x3abedba3052845ce3f57818032bfa747cded3fca"
+    const BGLD_MICRO_NFT_ADDRESS = "0x935d2fd458fdf41ca227a009180de5bd32a6d116"
+    const BGLD_REWARD_DISTRIBUTOR = "0x0c9fa52d7ed12a6316d3738c80931eccc33937dd"
+    const BGLD_REWARD_DISTRIBUTOR_DIAMOND = "0xf751d2849b3659c81f3724814d5a8defb0bb8ad2"
 
-    // Initialize contracts
     const bgldNFT = new ethers.Contract(BGLD_NFT_ADDRESS, erc721ABI, provider)
     const bgldMicroNFT = new ethers.Contract(BGLD_MICRO_NFT_ADDRESS, erc20ABI, provider)
     const legacyRewardDistributor = new ethers.Contract(BGLD_REWARD_DISTRIBUTOR, erc721ABI, provider)
@@ -58,7 +52,6 @@ serve(async (req) => {
 
     console.log(`Querying holdings for address: ${address}`)
 
-    // Query all data in parallel
     const [
       nftBalance,
       microNFTBalance,
@@ -78,10 +71,7 @@ serve(async (req) => {
     console.log('Legacy Rewards:', legacyRewards.toString())
     console.log('Diamond Rewards:', diamondRewards.toString())
 
-    // Calculate total rewards (sum of legacy and diamond rewards)
     const totalRewards = legacyRewards.add(diamondRewards)
-
-    // Convert micro NFT balance to proper decimal representation
     const microNFTBalanceAdjusted = Number(
       ethers.utils.formatUnits(microNFTBalance, microDecimals)
     )
