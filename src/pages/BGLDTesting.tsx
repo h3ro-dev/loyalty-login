@@ -7,6 +7,7 @@ import { fetchBscKey, testBGLDAddress, testOtherAddress, type TestResult } from 
 
 export default function BGLDTesting() {
   const [address, setAddress] = useState("");
+  const [blockTag, setBlockTag] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<TestResult | null>(null);
   const [bscKey, setBscKey] = useState<string | null>(null);
@@ -27,9 +28,9 @@ export default function BGLDTesting() {
     setResult(null);
     let testResult;
     if (contractType === "BGLD") {
-      testResult = await testBGLDAddress(address, bscKey);
+      testResult = await testBGLDAddress(address, bscKey, blockTag);
     } else {
-      testResult = await testOtherAddress(address, bscKey);
+      testResult = await testOtherAddress(address, bscKey, blockTag);
     }
     setResult(testResult);
     setIsLoading(false);
@@ -65,6 +66,17 @@ export default function BGLDTesting() {
                 <option value="BGLD">BGLD Holdings Test (BSC)</option>
                 <option value="Other">Other Contract Test</option>
               </select>
+            </div>
+            {/* Add Block Tag input */}
+            <div className="flex flex-col space-y-2 mt-2">
+              <label htmlFor="blockTag" className="font-medium">Block Tag (Optional):</label>
+              <input
+                type="text"
+                id="blockTag"
+                value={blockTag}
+                onChange={(e) => setBlockTag(e.target.value)}
+                className="p-2 border rounded"
+              />
             </div>
             <TestAddressForm 
               address={address}
