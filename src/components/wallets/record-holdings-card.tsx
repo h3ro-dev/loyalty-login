@@ -7,15 +7,21 @@ import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { HelpCircle } from "lucide-react";
 import { useHoldingsForm } from "@/hooks/use-holdings-form";
-import { ProjectName } from "@/types/wallet";
+import { TokenHolding, NFTHolding } from "@/types/wallet";
+import { useEffect } from "react";
 
 interface RecordHoldingsCardProps {
   selectedWallet: string | null;
-  wallets: Array<{ id: string; address: string }>;
+  wallets: Array<{
+    id: string;
+    address: string;
+    tokenHoldings: TokenHolding[];
+    nftHoldings: NFTHolding[];
+  }>;
   onHoldingsUpdated: () => void;
 }
 
-const projectOptions: { value: ProjectName; label: string }[] = [
+const projectOptions: { value: string; label: string }[] = [
   { value: "DEBT", label: "DEBT" },
   { value: "DLG", label: "DLG" },
   { value: "ALUM", label: "ALUM" },
@@ -27,7 +33,49 @@ const projectOptions: { value: ProjectName; label: string }[] = [
 ];
 
 export function RecordHoldingsCard({ selectedWallet, wallets, onHoldingsUpdated }: RecordHoldingsCardProps) {
-  const { form, isLoading, onSubmit } = useHoldingsForm();
+  const { form, isLoading, onSubmit, loadHoldings } = useHoldingsForm();
+
+  useEffect(() => {
+    if (selectedWallet && form.getValues("project_name")) {
+      const currentWallet = wallets.find(w => w.id === selectedWallet);
+      if (currentWallet) {
+        const projectName = form.getValues("project_name");
+        const tokenHolding = currentWallet.tokenHoldings.find(th => th.projectName === projectName);
+        const nftHolding = currentWallet.nftHoldings.find(nh => nh.projectName === projectName);
+        
+        loadHoldings({
+          project_name: projectName,
+          total_tokens: tokenHolding?.totalTokens || 0,
+          piggy_bank_tokens: tokenHolding?.piggyBankTokens || 0,
+          total_nfts: nftHolding?.totalNFTs || 0,
+          micro_nfts: nftHolding?.microNFTs || 0,
+        });
+      }
+    }
+  }, [selectedWallet, form.getValues("project_name"), wallets]);
+
+  const handleWalletChange = (id: string) => {
+    form.reset();
+  };
+
+  const handleProjectChange = (value: string) => {
+    form.setValue("project_name", value);
+    if (selectedWallet) {
+      const currentWallet = wallets.find(w => w.id === selectedWallet);
+      if (currentWallet) {
+        const tokenHolding = currentWallet.tokenHoldings.find(th => th.projectName === value);
+        const nftHolding = currentWallet.nftHoldings.find(nh => nh.projectName === value);
+        
+        loadHoldings({
+          project_name: value,
+          total_tokens: tokenHolding?.totalTokens || 0,
+          piggy_bank_tokens: tokenHolding?.piggyBankTokens || 0,
+          total_nfts: nftHolding?.totalNFTs || 0,
+          micro_nfts: nftHolding?.microNFTs || 0,
+        });
+      }
+    }
+  };
 
   const handleSubmit = async (values: any) => {
     if (!selectedWallet) return;
@@ -48,7 +96,7 @@ export function RecordHoldingsCard({ selectedWallet, wallets, onHoldingsUpdated 
       <CardContent className="space-y-6">
         <Select
           value={selectedWallet || ""}
-          onValueChange={id => form.reset()}
+          onValueChange={handleWalletChange}
         >
           <SelectTrigger>
             <SelectValue placeholder="Select a wallet" />
@@ -73,7 +121,7 @@ export function RecordHoldingsCard({ selectedWallet, wallets, onHoldingsUpdated 
                     <FormLabel>Project</FormLabel>
                     <Select
                       value={field.value}
-                      onValueChange={field.onChange}
+                      onValueChange={handleProjectChange}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select a project" />

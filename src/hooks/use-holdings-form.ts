@@ -31,6 +31,10 @@ export function useHoldingsForm() {
     },
   });
 
+  const loadHoldings = (values: HoldingsFormValues) => {
+    form.reset(values);
+  };
+
   const onSubmit = async (values: HoldingsFormValues, walletId: string) => {
     setIsLoading(true);
     try {
@@ -120,5 +124,6 @@ export function useHoldingsForm() {
     form,
     isLoading,
     onSubmit,
+    loadHoldings,
   };
 }
