@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Wallets from "./pages/Wallets";
+import BGLDTesting from "./pages/BGLDTesting";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -21,6 +22,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/wallets" element={<Wallets />} />
+          <Route path="/bgld-testing" element={<BGLDTesting />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

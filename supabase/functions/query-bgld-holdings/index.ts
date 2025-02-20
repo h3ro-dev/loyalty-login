@@ -19,7 +19,7 @@ serve(async (req) => {
   }
 
   try {
-    const { address } = await req.json()
+    const { address, blockNumber } = await req.json()
     
     if (!address || !ethers.utils.isAddress(address)) {
       throw new Error('Invalid Ethereum address')
@@ -39,11 +39,13 @@ serve(async (req) => {
       "function decimals() view returns (uint8)"
     ]
 
-    // Update with actual contract addresses
     const BGLD_NFT_ADDRESS = "0x3abedba3052845ce3f57818032bfa747cded3fca"
     const BGLD_MICRO_NFT_ADDRESS = "0x935d2fd458fdf41ca227a009180de5bd32a6d116"
     const BGLD_REWARD_DISTRIBUTOR = "0x0c9fa52d7ed12a6316d3738c80931eccc33937dd"
     const BGLD_REWARD_DISTRIBUTOR_DIAMOND = "0xf751d2849b3659c81f3724814d5a8defb0bb8ad2"
+
+    const overrides = blockNumber ? { blockTag: blockNumber } : {}
+    console.log(`Querying at block: ${blockNumber || 'latest'}`)
 
     const bgldNFT = new ethers.Contract(BGLD_NFT_ADDRESS, erc721ABI, provider)
     const bgldMicroNFT = new ethers.Contract(BGLD_MICRO_NFT_ADDRESS, erc20ABI, provider)
@@ -59,10 +61,10 @@ serve(async (req) => {
       diamondRewards,
       microDecimals
     ] = await Promise.all([
-      bgldNFT.balanceOf(address),
-      bgldMicroNFT.balanceOf(address),
-      legacyRewardDistributor.calculatePendingRewards(address).catch(() => ethers.BigNumber.from(0)),
-      diamondRewardDistributor.calculatePendingRewards(address).catch(() => ethers.BigNumber.from(0)),
+      bgldNFT.balanceOf(address, overrides),
+      bgldMicroNFT.balanceOf(address, overrides),
+      legacyRewardDistributor.calculatePendingRewards(address, overrides).catch(() => ethers.BigNumber.from(0)),
+      diamondRewardDistributor.calculatePendingRewards(address, overrides).catch(() => ethers.BigNumber.from(0)),
       bgldMicroNFT.decimals()
     ])
 
