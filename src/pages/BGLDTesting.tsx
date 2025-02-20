@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -21,17 +21,48 @@ export default function BGLDTesting() {
   const [address, setAddress] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<TestResult | null>(null);
+  const [alchemyKey, setAlchemyKey] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchAlchemyKey = async () => {
+      const { data: { value }, error } = await supabase
+        .rpc('get_secret', { secret_name: 'ALCHEMY_API_KEY' });
+      
+      if (error) {
+        console.error('Error fetching Alchemy API key:', error);
+        toast({
+          variant: "destructive",
+          title: "Error fetching API key",
+          description: "Please make sure your Alchemy API key is properly set."
+        });
+        return;
+      }
+      
+      setAlchemyKey(value);
+    };
+
+    fetchAlchemyKey();
+  }, []);
 
   const testAddress = async () => {
+    if (!alchemyKey) {
+      toast({
+        variant: "destructive",
+        title: "API Key Missing",
+        description: "Please make sure your Alchemy API key is properly set."
+      });
+      return;
+    }
+
     setIsLoading(true);
     setResult(null);
     
     try {
       console.log("Testing address:", address);
 
-      // Initialize provider
+      // Initialize provider with the fetched API key
       const provider = new ethers.providers.JsonRpcProvider(
-        "https://eth-mainnet.g.alchemy.com/v2/your-api-key" // Replace with env variable in production
+        `https://eth-mainnet.g.alchemy.com/v2/${alchemyKey}`
       );
 
       // Contract addresses
@@ -143,7 +174,7 @@ export default function BGLDTesting() {
               />
               <Button 
                 onClick={testAddress} 
-                disabled={isLoading || !address}
+                disabled={isLoading || !address || !alchemyKey}
               >
                 {isLoading ? (
                   <>
@@ -158,6 +189,16 @@ export default function BGLDTesting() {
                 )}
               </Button>
             </div>
+
+            {!alchemyKey && (
+              <Alert variant="destructive">
+                <X className="h-4 w-4" />
+                <AlertTitle>API Key Missing</AlertTitle>
+                <AlertDescription>
+                  Please make sure your Alchemy API key is properly set in Supabase.
+                </AlertDescription>
+              </Alert>
+            )}
 
             {result && (
               <div className="space-y-4">
