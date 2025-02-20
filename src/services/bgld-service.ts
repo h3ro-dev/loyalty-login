@@ -1,4 +1,3 @@
-
 import { ethers } from "ethers";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
@@ -39,7 +38,7 @@ export async function fetchBscKey() {
   return apiKey as string;
 }
 
-export async function testBGLDAddress(address: string, bscKey: string): Promise<TestResult> {
+export async function testBGLDAddress(address: string, bscKey: string, blockTag?: string): Promise<TestResult> {
   try {
     const provider = new ethers.providers.JsonRpcProvider(
       `https://bnb-mainnet.g.alchemy.com/v2/${bscKey}`
@@ -72,13 +71,11 @@ export async function testBGLDAddress(address: string, bscKey: string): Promise<
       legacyRewards,
       diamondRewards
     ] = await Promise.all([
-      bgldNFT.balanceOf(address),
-      bgldMicroNFT.balanceOf(address),
+      bgldNFT.balanceOf(address, blockTag ? { blockTag } : {}),
+      bgldMicroNFT.balanceOf(address, blockTag ? { blockTag } : {}),
       bgldMicroNFT.decimals(),
-      legacyRewardDistributor.calculatePendingRewards(address)
-        .catch(() => ethers.BigNumber.from(0)),
-      diamondRewardDistributor.calculatePendingRewards(address)
-        .catch(() => ethers.BigNumber.from(0))
+      legacyRewardDistributor.calculatePendingRewards(address, blockTag ? { blockTag } : {}).catch(() => ethers.BigNumber.from(0)),
+      diamondRewardDistributor.calculatePendingRewards(address, blockTag ? { blockTag } : {}).catch(() => ethers.BigNumber.from(0))
     ]);
 
     const totalRewards = legacyRewards.add(diamondRewards);
@@ -94,6 +91,36 @@ export async function testBGLDAddress(address: string, bscKey: string): Promise<
     await storeResults(holdings);
     return holdings;
 
+  } catch (error: any) {
+    return {
+      address,
+      total_nfts: 0,
+      micro_nfts: 0,
+      pending_rewards: 0,
+      error: error.message
+    };
+  }
+}
+
+export async function testOtherAddress(address: string, bscKey: string, blockTag?: string): Promise<TestResult> {
+  try {
+    const provider = new ethers.providers.JsonRpcProvider(`https://bnb-mainnet.g.alchemy.com/v2/${bscKey}`);
+    const OTHER_NFT_ADDRESS = "0xOtherNFTPlaceholder";
+    const erc721ABI = [
+      "function balanceOf(address owner) view returns (uint256)"
+    ];
+
+    const otherNFT = new ethers.Contract(OTHER_NFT_ADDRESS, erc721ABI, provider);
+    const nftBalance = await otherNFT.balanceOf(address, blockTag ? { blockTag } : {});
+
+    const holdings: TestResult = {
+      address,
+      total_nfts: nftBalance.toNumber(),
+      micro_nfts: 0,
+      pending_rewards: 0
+    };
+
+    return holdings;
   } catch (error: any) {
     return {
       address,

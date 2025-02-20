@@ -67,3 +67,110 @@ Simply open [Lovable](https://lovable.dev/projects/cd61a645-02e6-47f0-a29c-6ba3c
 ## I want to use a custom domain - is that possible?
 
 We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+
+## Smart Contracts
+
+### Loyalty Reward Voucher Generation System
+
+#### BGLD NFT Contract
+- **Address:** `0x3abedba3052845ce3f57818032bfa747cded3fca`
+- **ABI:**
+```json
+[
+  {
+    "inputs": [{ "name": "owner", "type": "address" }],
+    "name": "balanceOf",
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "name": "user", "type": "address" }],
+    "name": "calculatePendingRewards",
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
+```
+
+#### BGLD Micro NFT Contract
+- **Address:** `0x935d2fd458fdf41ca227a009180de5bd32a6d116`
+- **ABI:**
+```json
+[
+  {
+    "inputs": [{ "name": "owner", "type": "address" }],
+    "name": "balanceOf",
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "decimals",
+    "outputs": [{ "name": "", "type": "uint8" }],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
+```
+
+#### BGLD Reward Distributor Contract
+- **Address:** `0x0c9fa52d7ed12a6316d3738c80931eccc33937dd`
+- **ABI:**
+```json
+[
+  {
+    "inputs": [{ "name": "owner", "type": "address" }],
+    "name": "balanceOf",
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "name": "user", "type": "address" }],
+    "name": "calculatePendingRewards",
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
+```
+
+#### BGLD Reward Distributor Diamond Contract
+- **Address:** `0xf751d2849b3659c81f3724814d5a8defb0bb8ad2`
+- **ABI:** (Same as Reward Distributor Contract)
+```json
+[
+  {
+    "inputs": [{ "name": "owner", "type": "address" }],
+    "name": "balanceOf",
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "name": "user", "type": "address" }],
+    "name": "calculatePendingRewards",
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
+```
+
+#### Other NFT Contract
+- **Address:** `0xOtherNFTPlaceholder`
+- **ABI:**
+```json
+[
+  {
+    "inputs": [{ "name": "owner", "type": "address" }],
+    "name": "balanceOf",
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
+```
