@@ -64,10 +64,10 @@ export function useHoldingsForm() {
           .from("token_holdings")
           .insert({
             wallet_id: walletId,
-            project_name: values.project_name,
+            project_name: values.project_name as keyof typeof PROJECT_CONVERSIONS,
             total_tokens: values.total_tokens,
             piggy_bank_tokens: values.piggy_bank_tokens,
-          } as const);
+          });
 
         if (tokenError) throw tokenError;
       }
@@ -87,10 +87,10 @@ export function useHoldingsForm() {
           .from("nft_holdings")
           .insert({
             wallet_id: walletId,
-            project_name: values.project_name,
+            project_name: values.project_name as keyof typeof PROJECT_CONVERSIONS,
             total_nfts: values.total_nfts,
             micro_nfts: values.micro_nfts,
-          } as const);
+          });
 
         if (nftError) throw nftError;
       }

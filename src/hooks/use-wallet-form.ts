@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,7 +25,7 @@ export function useWalletForm() {
     },
   });
 
-  const fetchOnChainData = async (address: string, project: ProjectName) => {
+  const fetchOnChainData = async (address: string, project: keyof typeof PROJECT_CONVERSIONS) => {
     if (project !== 'BGLD') return null;
     
     try {
