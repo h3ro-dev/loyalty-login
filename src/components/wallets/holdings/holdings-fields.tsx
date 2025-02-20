@@ -11,6 +11,12 @@ interface HoldingsFieldsProps {
 }
 
 export function HoldingsFields({ form }: HoldingsFieldsProps) {
+  const handleNumberInput = (e: React.ChangeEvent<HTMLInputElement>, onChange: (value: number) => void) => {
+    // Remove leading zeros and convert to number
+    const value = e.target.value.replace(/^0+/, '') || '0';
+    onChange(Number(value));
+  };
+
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <FormField
@@ -34,8 +40,12 @@ export function HoldingsFields({ form }: HoldingsFieldsProps) {
             <FormControl>
               <Input
                 type="number"
+                min="0"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 {...field}
-                onChange={e => field.onChange(Number(e.target.value))}
+                value={field.value || ''}
+                onChange={(e) => handleNumberInput(e, field.onChange)}
               />
             </FormControl>
             <FormMessage />
@@ -52,8 +62,12 @@ export function HoldingsFields({ form }: HoldingsFieldsProps) {
             <FormControl>
               <Input
                 type="number"
+                min="0"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 {...field}
-                onChange={e => field.onChange(Number(e.target.value))}
+                value={field.value || ''}
+                onChange={(e) => handleNumberInput(e, field.onChange)}
               />
             </FormControl>
             <FormMessage />
@@ -82,8 +96,12 @@ export function HoldingsFields({ form }: HoldingsFieldsProps) {
             <FormControl>
               <Input
                 type="number"
+                min="0"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 {...field}
-                onChange={e => field.onChange(Number(e.target.value))}
+                value={field.value || ''}
+                onChange={(e) => handleNumberInput(e, field.onChange)}
               />
             </FormControl>
             <FormMessage />
@@ -100,8 +118,12 @@ export function HoldingsFields({ form }: HoldingsFieldsProps) {
             <FormControl>
               <Input
                 type="number"
+                min="0"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 {...field}
-                onChange={e => field.onChange(Number(e.target.value))}
+                value={field.value || ''}
+                onChange={(e) => handleNumberInput(e, field.onChange)}
               />
             </FormControl>
             <FormMessage />
