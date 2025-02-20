@@ -22,52 +22,36 @@ export default function BGLDTesting() {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<TestResult | null>(null);
   const [alchemyKey, setAlchemyKey] = useState<string | null>(null);
-  const [alchemyBscKey, setAlchemyBscKey] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchAlchemyKeys = async () => {
+    const fetchAlchemyKey = async () => {
       try {
-        // Fetch ETH Alchemy Key
         const { data: ethKey, error: ethError } = await supabase
           .rpc('get_secret', { 
             secret_name: 'ALCHEMY_API_KEY' 
           });
         
         if (ethError) {
-          throw new Error(`Error fetching ETH key: ${ethError.message}`);
+          throw new Error(`Error fetching Alchemy key: ${ethError.message}`);
         }
         
         if (ethKey) {
-          console.log('Successfully fetched ETH key');
+          console.log('Successfully fetched Alchemy key');
           setAlchemyKey(ethKey as string);
+        } else {
+          throw new Error('No Alchemy key found');
         }
-
-        // Fetch BSC Alchemy Key
-        const { data: bscKey, error: bscError } = await supabase
-          .rpc('get_secret', { 
-            secret_name: 'Alchemy-API-BSC' 
-          });
-        
-        if (bscError) {
-          throw new Error(`Error fetching BSC key: ${bscError.message}`);
-        }
-
-        if (bscKey) {
-          console.log('Successfully fetched BSC key');
-          setAlchemyBscKey(bscKey as string);
-        }
-
       } catch (error: any) {
-        console.error('Error in fetchAlchemyKeys:', error);
+        console.error('Error in fetchAlchemyKey:', error);
         toast({
           variant: "destructive",
-          title: "Error fetching API keys",
+          title: "Error fetching API key",
           description: error.message
         });
       }
     };
 
-    fetchAlchemyKeys();
+    fetchAlchemyKey();
   }, []);
 
   const testAddress = async () => {
@@ -85,8 +69,7 @@ export default function BGLDTesting() {
     
     try {
       console.log("Testing address:", address);
-      console.log("Using ETH key:", alchemyKey ? "Yes" : "No");
-      console.log("Using BSC key:", alchemyBscKey ? "Yes" : "No");
+      console.log("Using Alchemy key:", alchemyKey ? "Yes" : "No");
 
       // Initialize provider with the fetched API key
       const provider = new ethers.providers.JsonRpcProvider(
@@ -223,7 +206,7 @@ export default function BGLDTesting() {
                 <X className="h-4 w-4" />
                 <AlertTitle>API Key Missing</AlertTitle>
                 <AlertDescription>
-                  Please make sure your Alchemy API key is properly set in Supabase.
+                  Please make sure your Ethereum Alchemy API key is properly set in Supabase.
                 </AlertDescription>
               </Alert>
             )}
