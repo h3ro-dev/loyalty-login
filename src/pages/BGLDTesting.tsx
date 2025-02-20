@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -33,6 +32,11 @@ export default function BGLDTesting() {
         
         if (keyError) {
           console.error('Error fetching BSC key:', keyError);
+          toast({
+            variant: "destructive",
+            title: "API Key Error",
+            description: "Failed to fetch the BSC API key."
+          });
           return;
         }
         
@@ -40,36 +44,19 @@ export default function BGLDTesting() {
           console.log('Successfully fetched BSC key');
           setBscKey(apiKey as string);
         } else {
-          console.warn('No BSC API key found, will try alternative name');
-          // Try alternative secret name
-          const { data: altApiKey, error: altKeyError } = await supabase
-            .rpc('get_secret', { 
-              secret_name: 'BSC_API_KEY' 
-            });
-          
-          if (altKeyError) {
-            console.error('Error fetching alternative BSC key:', altKeyError);
-            return;
-          }
-
-          if (altApiKey) {
-            console.log('Successfully fetched alternative BSC key');
-            setBscKey(altApiKey as string);
-          } else {
-            console.error('No BSC API key found under any name');
-            toast({
-              variant: "destructive",
-              title: "API Key Not Found",
-              description: "BSC API key not found in Supabase settings."
-            });
-          }
+          console.error('BSC API key not found');
+          toast({
+            variant: "destructive",
+            title: "API Key Not Found",
+            description: "BSC API key not found in Supabase settings."
+          });
         }
       } catch (error: any) {
         console.error('Error in fetchBscKey:', error);
         toast({
           variant: "destructive",
-          title: "Error fetching BSC API key",
-          description: "Failed to retrieve the API key from Supabase."
+          title: "Error",
+          description: "An unexpected error occurred while fetching the API key."
         });
       }
     };
