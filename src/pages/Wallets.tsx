@@ -47,13 +47,13 @@ export default function Wallets() {
 
       const { data: walletsData, error: walletsError } = await supabase
         .from("wallets")
-        .select("*")
+        .select("id, address, nickname, profile_id")
         .eq("profile_id", user.id);
 
       if (walletsError) throw walletsError;
 
       const walletsWithHoldings = await Promise.all(
-        walletsData.map(async (wallet) => {
+        (walletsData || []).map(async (wallet) => {
           const [{ data: tokenHoldings }, { data: nftHoldings }] = await Promise.all([
             supabase
               .from("token_holdings")
