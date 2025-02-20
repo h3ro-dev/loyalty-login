@@ -29,6 +29,14 @@ serve(async (req) => {
       "https://eth-mainnet.g.alchemy.com/v2/" + Deno.env.get("ALCHEMY_API_KEY")
     )
 
+    // Verify provider connection
+    try {
+      await provider.getNetwork()
+    } catch (error) {
+      console.error('Provider connection error:', error)
+      throw new Error('Failed to connect to Ethereum network')
+    }
+
     const erc721ABI = [
       "function balanceOf(address owner) view returns (uint256)",
       "function calculatePendingRewards(address user) view returns (uint256)"
@@ -46,6 +54,7 @@ serve(async (req) => {
 
     const overrides = blockNumber ? { blockTag: blockNumber } : {}
     console.log(`Querying at block: ${blockNumber || 'latest'}`)
+    console.log('Using overrides:', overrides)
 
     const bgldNFT = new ethers.Contract(BGLD_NFT_ADDRESS, erc721ABI, provider)
     const bgldMicroNFT = new ethers.Contract(BGLD_MICRO_NFT_ADDRESS, erc20ABI, provider)
@@ -54,26 +63,52 @@ serve(async (req) => {
 
     console.log(`Querying holdings for address: ${address}`)
 
-    const [
-      nftBalance,
-      microNFTBalance,
-      legacyRewards,
-      diamondRewards,
-      microDecimals
-    ] = await Promise.all([
-      bgldNFT.balanceOf(address, overrides),
-      bgldMicroNFT.balanceOf(address, overrides),
-      legacyRewardDistributor.calculatePendingRewards(address, overrides).catch(() => ethers.BigNumber.from(0)),
-      diamondRewardDistributor.calculatePendingRewards(address, overrides).catch(() => ethers.BigNumber.from(0)),
-      bgldMicroNFT.decimals()
-    ])
+    // Query each contract separately to better identify issues
+    let nftBalance, microNFTBalance, legacyRewards, diamondRewards, microDecimals;
 
-    console.log('NFT Balance:', nftBalance.toString())
-    console.log('Micro NFT Balance:', microNFTBalance.toString())
-    console.log('Legacy Rewards:', legacyRewards.toString())
-    console.log('Diamond Rewards:', diamondRewards.toString())
+    try {
+      nftBalance = await bgldNFT.balanceOf(address, overrides)
+      console.log('NFT Balance:', nftBalance.toString())
+    } catch (error) {
+      console.error('Error fetching NFT balance:', error)
+      throw new Error('Failed to fetch NFT balance')
+    }
 
-    const totalRewards = legacyRewards.add(diamondRewards)
+    try {
+      microNFTBalance = await bgldMicroNFT.balanceOf(address, overrides)
+      console.log('Micro NFT Balance:', microNFTBalance.toString())
+    } catch (error) {
+      console.error('Error fetching Micro NFT balance:', error)
+      throw new Error('Failed to fetch Micro NFT balance')
+    }
+
+    try {
+      microDecimals = await bgldMicroNFT.decimals()
+      console.log('Micro NFT Decimals:', microDecimals)
+    } catch (error) {
+      console.error('Error fetching Micro NFT decimals:', error)
+      throw new Error('Failed to fetch Micro NFT decimals')
+    }
+
+    try {
+      legacyRewards = await legacyRewardDistributor.calculatePendingRewards(address, overrides)
+      console.log('Legacy Rewards:', legacyRewards.toString())
+    } catch (error) {
+      console.error('Error fetching legacy rewards:', error)
+      legacyRewards = ethers.BigNumber.from(0)
+    }
+
+    try {
+      diamondRewards = await diamondRewardDistributor.calculatePendingRewards(address, overrides)
+      console.log('Diamond Rewards:', diamondRewards.toString())
+    } catch (error) {
+      console.error('Error fetching diamond rewards:', error)
+      diamondRewards = ethers.BigNumber.from(0)
+    }
+
+    const totalRewards = (legacyRewards || ethers.BigNumber.from(0))
+      .add(diamondRewards || ethers.BigNumber.from(0))
+    
     const microNFTBalanceAdjusted = Number(
       ethers.utils.formatUnits(microNFTBalance, microDecimals)
     )
@@ -83,6 +118,8 @@ serve(async (req) => {
       micro_nfts: microNFTBalanceAdjusted,
       pending_rewards: Number(ethers.utils.formatEther(totalRewards))
     }
+
+    console.log('Final holdings:', holdings)
 
     return new Response(
       JSON.stringify(holdings),
@@ -96,10 +133,14 @@ serve(async (req) => {
     )
 
   } catch (error) {
-    console.error('Error:', error.message)
+    console.error('Error in edge function:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
     
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: errorMessage,
+        details: error instanceof Error ? error.stack : undefined
+      }),
       { 
         headers: {
           ...corsHeaders,
