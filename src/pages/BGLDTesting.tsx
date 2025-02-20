@@ -17,6 +17,10 @@ interface TestResult {
   error?: string;
 }
 
+interface SecretArgs {
+  secret_name: string;
+}
+
 export default function BGLDTesting() {
   const [address, setAddress] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -25,12 +29,8 @@ export default function BGLDTesting() {
 
   useEffect(() => {
     const fetchAlchemyKey = async () => {
-      interface SecretArgs {
-        secret_name: string;
-      }
-      
       const { data, error } = await supabase
-        .rpc<string, SecretArgs>('get_secret', { 
+        .rpc('get_secret', { 
           secret_name: 'ALCHEMY_API_KEY' 
         });
       
@@ -44,7 +44,7 @@ export default function BGLDTesting() {
         return;
       }
       
-      setAlchemyKey(data);
+      setAlchemyKey(data as string);
     };
 
     fetchAlchemyKey();
