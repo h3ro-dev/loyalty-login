@@ -30,7 +30,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { toast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 type ProjectName = "DEBT" | "CHRS" | "ALUM" | "BAUX" | "BGLD" | "OIL" | "DCM" | "DATA" | "DLG" | "GDLG" | "GROW" | "FARM" | "NATG" | "NGAS" | "XPLR" | "EXPL";
 
@@ -67,7 +67,15 @@ const projectOptions: { value: ProjectName; label: string }[] = [
 
 export function HoldingsForm({ wallets, selectedWallet, onWalletSelect, onHoldingsUpdated }: Props) {
   const [isLoading, setIsLoading] = useState(false);
-  const { data: { user } } = await supabase.auth.getUser();
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    getUser();
+  }, []);
 
   const form = useForm<HoldingsFormValues>({
     resolver: zodResolver(holdingsSchema),
