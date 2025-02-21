@@ -138,7 +138,7 @@ export default function Wallets() {
               onWalletSelect={setSelectedWallet}
               onHoldingsUpdated={fetchWallets}
             />
-            <WalletDisplay wallets={wallets} />
+            <WalletDisplay wallets={wallets} onWalletsUpdated={fetchWallets} />
           </>
         )}
       </div>
