@@ -1,17 +1,4 @@
 
-export const PROJECT_CONVERSIONS = {
-  DEBT: "CHRS",
-  ALUM: "BAUX",
-  BGLD: "OIL",
-  DCM: "DATA",
-  DLG: "GDLG",
-  GROW: "FARM",
-  NATG: "NGAS",
-  XPLR: "EXPL",
-} as const;
-
-export type ProjectName = keyof typeof PROJECT_CONVERSIONS;
-
 export interface TokenHolding {
   projectName: string;
   totalTokens: number;
@@ -36,3 +23,14 @@ export interface UserProfile {
   email: string;
   wallets: WalletData[];
 }
+
+export const PROJECT_CONVERSIONS = {
+  DEBT: "CHRS",
+  ALUM: "BAUX",
+  BGLD: "OIL",
+  DCM: "DATA",
+  DLG: "GDLG",
+  GROW: "FARM",
+  NATG: "NGAS",
+  XPLR: "EXPL",
+} as const;

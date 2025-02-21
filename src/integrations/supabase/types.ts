@@ -117,7 +117,6 @@ export type Database = {
           address: string
           created_at: string
           id: string
-          nickname: string | null
           profile_id: string
           updated_at: string
         }
@@ -125,7 +124,6 @@ export type Database = {
           address: string
           created_at?: string
           id?: string
-          nickname?: string | null
           profile_id: string
           updated_at?: string
         }
@@ -133,7 +131,6 @@ export type Database = {
           address?: string
           created_at?: string
           id?: string
-          nickname?: string | null
           profile_id?: string
           updated_at?: string
         }
@@ -152,12 +149,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      get_secret: {
-        Args: {
-          secret_name: string
-        }
-        Returns: string
-      }
+      [_ in never]: never
     }
     Enums: {
       project_name:
