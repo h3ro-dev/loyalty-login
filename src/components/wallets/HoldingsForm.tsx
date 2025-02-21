@@ -162,17 +162,13 @@ export function HoldingsForm({ wallets, selectedWallet, onWalletSelect, onHoldin
     fetchCurrentHoldings();
   }, [selectedWallet, form.watch("project_name")]);
 
-  const handleInputFocus = (field: keyof HoldingsFormValues) => {
-    if (field !== 'project_name') {
-      form.setValue(field, 0);
-    }
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, field: keyof HoldingsFormValues) => {
+    const value = e.target.value === '' ? 0 : Number(e.target.value);
+    form.setValue(field, value);
   };
 
-  const handleInputBlur = (field: keyof HoldingsFormValues) => {
-    const value = form.getValues(field);
-    if (value === 0 && currentHoldings) {
-      form.setValue(field, currentHoldings[field]);
-    }
+  const handleInputFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    e.target.select();
   };
 
   const onSubmit = async (values: HoldingsFormValues) => {
@@ -350,9 +346,8 @@ export function HoldingsForm({ wallets, selectedWallet, onWalletSelect, onHoldin
                         <Input
                           type="number"
                           {...field}
-                          onChange={e => field.onChange(Number(e.target.value))}
-                          onFocus={() => handleInputFocus('total_nfts')}
-                          onBlur={() => handleInputBlur('total_nfts')}
+                          onChange={(e) => handleInputChange(e, 'total_nfts')}
+                          onFocus={handleInputFocus}
                         />
                       </FormControl>
                       <FormMessage />
@@ -370,9 +365,8 @@ export function HoldingsForm({ wallets, selectedWallet, onWalletSelect, onHoldin
                         <Input
                           type="number"
                           {...field}
-                          onChange={e => field.onChange(Number(e.target.value))}
-                          onFocus={() => handleInputFocus('micro_nfts')}
-                          onBlur={() => handleInputBlur('micro_nfts')}
+                          onChange={(e) => handleInputChange(e, 'micro_nfts')}
+                          onFocus={handleInputFocus}
                         />
                       </FormControl>
                       <FormMessage />
@@ -402,9 +396,8 @@ export function HoldingsForm({ wallets, selectedWallet, onWalletSelect, onHoldin
                         <Input
                           type="number"
                           {...field}
-                          onChange={e => field.onChange(Number(e.target.value))}
-                          onFocus={() => handleInputFocus('total_tokens')}
-                          onBlur={() => handleInputBlur('total_tokens')}
+                          onChange={(e) => handleInputChange(e, 'total_tokens')}
+                          onFocus={handleInputFocus}
                         />
                       </FormControl>
                       <FormMessage />
@@ -422,9 +415,8 @@ export function HoldingsForm({ wallets, selectedWallet, onWalletSelect, onHoldin
                         <Input
                           type="number"
                           {...field}
-                          onChange={e => field.onChange(Number(e.target.value))}
-                          onFocus={() => handleInputFocus('piggy_bank_tokens')}
-                          onBlur={() => handleInputBlur('piggy_bank_tokens')}
+                          onChange={(e) => handleInputChange(e, 'piggy_bank_tokens')}
+                          onFocus={handleInputFocus}
                         />
                       </FormControl>
                       <FormMessage />
@@ -443,9 +435,8 @@ export function HoldingsForm({ wallets, selectedWallet, onWalletSelect, onHoldin
                           <Input
                             type="number"
                             {...field}
-                            onChange={e => field.onChange(Number(e.target.value))}
-                            onFocus={() => handleInputFocus('staked_debt_tokens')}
-                            onBlur={() => handleInputBlur('staked_debt_tokens')}
+                            onChange={(e) => handleInputChange(e, 'staked_debt_tokens')}
+                            onFocus={handleInputFocus}
                           />
                         </FormControl>
                         <FormMessage />
