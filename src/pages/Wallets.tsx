@@ -14,6 +14,7 @@ interface TokenHolding {
   project_name: string;
   total_tokens: number;
   piggy_bank_tokens: number;
+  staked_debt_tokens: number;
 }
 
 interface NFTHolding {
@@ -79,7 +80,10 @@ export default function Wallets() {
 
           return {
             ...wallet,
-            tokenHoldings: tokenHoldings || [],
+            tokenHoldings: tokenHoldings ? tokenHoldings.map(holding => ({
+              ...holding,
+              staked_debt_tokens: holding.staked_debt_tokens || 0 // Ensure this field exists
+            })) : [],
             nftHoldings: nftHoldings || [],
           };
         })
