@@ -31,8 +31,9 @@ import {
 } from "@/components/ui/tooltip";
 import { toast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
+import { Database } from "@/integrations/supabase/types";
 
-type ProjectName = "DEBT" | "CHRS" | "ALUM" | "BAUX" | "BGLD" | "OIL" | "DCM" | "DATA" | "DLG" | "GDLG" | "GROW" | "FARM" | "NATG" | "NGAS" | "XPLR" | "EXPL";
+type ProjectName = Database["public"]["Enums"]["project_name"];
 
 interface TokenHolding {
   id: string;
@@ -56,7 +57,7 @@ interface NFTHolding {
 }
 
 const holdingsSchema = z.object({
-  project_name: z.enum(["DEBT", "CHRS", "ALUM", "BAUX", "BGLD", "OIL", "DCM", "DATA", "DLG", "GDLG", "GROW", "FARM", "NATG", "NGAS", "XPLR", "EXPL"]),
+  project_name: z.enum(["DEBT", "CHRS", "ALUM", "BAUX", "BGLD", "OIL", "DCM", "DATA", "DLG", "GDLG", "GROW", "FARM", "NATG", "NGAS", "XPLR", "EXPL"] as const),
   total_nfts: z.number().min(0, "Must be 0 or greater"),
   micro_nfts: z.number().min(0, "Must be 0 or greater"),
   total_tokens: z.number().min(0, "Must be 0 or greater"),
@@ -116,29 +117,31 @@ export function HoldingsForm({ wallets, selectedWallet, onWalletSelect, onHoldin
     const fetchCurrentHoldings = async () => {
       if (!selectedWallet || !form.getValues("project_name")) return;
 
+      const projectName = form.getValues("project_name");
+
       const [{ data: tokenHoldings }, { data: nftHoldings }] = await Promise.all([
         supabase
           .from("token_holdings")
           .select("*")
           .eq("wallet_id", selectedWallet)
-          .eq("project_name", form.getValues("project_name"))
+          .eq("project_name", projectName)
           .maybeSingle(),
         supabase
           .from("nft_holdings")
           .select("*")
           .eq("wallet_id", selectedWallet)
-          .eq("project_name", form.getValues("project_name"))
+          .eq("project_name", projectName)
           .maybeSingle(),
       ]);
 
       if (tokenHoldings || nftHoldings) {
         const holdings: HoldingsFormValues = {
-          project_name: form.getValues("project_name"),
-          total_tokens: tokenHoldings?.total_tokens || 0,
-          piggy_bank_tokens: tokenHoldings?.piggy_bank_tokens || 0,
-          staked_debt_tokens: (tokenHoldings as TokenHolding)?.staked_debt_tokens || 0,
-          total_nfts: nftHoldings?.total_nfts || 0,
-          micro_nfts: nftHoldings?.micro_nfts || 0,
+          project_name: projectName,
+          total_tokens: tokenHoldings?.total_tokens ?? 0,
+          piggy_bank_tokens: tokenHoldings?.piggy_bank_tokens ?? 0,
+          staked_debt_tokens: tokenHoldings?.staked_debt_tokens ?? 0,
+          total_nfts: nftHoldings?.total_nfts ?? 0,
+          micro_nfts: nftHoldings?.micro_nfts ?? 0,
         };
         
         setCurrentHoldings(holdings);
@@ -146,7 +149,7 @@ export function HoldingsForm({ wallets, selectedWallet, onWalletSelect, onHoldin
       } else {
         setCurrentHoldings(null);
         form.reset({
-          project_name: form.getValues("project_name"),
+          project_name: projectName,
           total_tokens: 0,
           piggy_bank_tokens: 0,
           staked_debt_tokens: 0,
