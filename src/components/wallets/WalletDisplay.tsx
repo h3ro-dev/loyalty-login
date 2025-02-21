@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
@@ -30,9 +29,8 @@ interface Wallet {
   nftHoldings: NFTHolding[];
 }
 
-interface Props {
-  wallets: Wallet[];
-  onWalletsUpdated: () => void;
+interface WalletNicknames {
+  [key: string]: string;
 }
 
 interface EditingState {
@@ -42,14 +40,27 @@ interface EditingState {
   value: number;
 }
 
+interface Props {
+  wallets: Wallet[];
+  onWalletsUpdated: () => void;
+}
+
 export function WalletDisplay({ wallets, onWalletsUpdated }: Props) {
   const [editingWallet, setEditingWallet] = useState<string | null>(null);
   const [editAddress, setEditAddress] = useState("");
   const [editingHolding, setEditingHolding] = useState<EditingState | null>(null);
+  const [nicknames, setNicknames] = useState<WalletNicknames>({});
+
+  useEffect(() => {
+    const savedNicknames = localStorage.getItem('walletNicknames');
+    if (savedNicknames) {
+      setNicknames(JSON.parse(savedNicknames));
+    }
+  }, []);
 
   const handleEditStart = (wallet: Wallet) => {
     setEditingWallet(wallet.id);
-    setEditAddress(wallet.address);
+    setEditAddress(nicknames[wallet.id] || '');
   };
 
   const handleEditCancel = () => {
@@ -60,21 +71,20 @@ export function WalletDisplay({ wallets, onWalletsUpdated }: Props) {
 
   const handleEditSave = async (walletId: string) => {
     try {
-      const { error } = await supabase
-        .from("wallets")
-        .update({ address: editAddress })
-        .eq("id", walletId);
-
-      if (error) throw error;
+      const updatedNicknames = {
+        ...nicknames,
+        [walletId]: editAddress
+      };
+      localStorage.setItem('walletNicknames', JSON.stringify(updatedNicknames));
+      setNicknames(updatedNicknames);
 
       toast({
-        title: "Wallet updated",
-        description: "The wallet address has been updated successfully.",
+        title: "Nickname updated",
+        description: "The wallet nickname has been updated successfully.",
       });
 
       setEditingWallet(null);
       setEditAddress("");
-      onWalletsUpdated();
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -187,7 +197,7 @@ export function WalletDisplay({ wallets, onWalletsUpdated }: Props) {
       <CardHeader>
         <CardTitle>Connected Wallets</CardTitle>
         <CardDescription>
-          View and manage your connected wallets and their holdings
+          View and manage your connected wallets and their holdings. Add nicknames to easily identify your wallets.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -200,6 +210,7 @@ export function WalletDisplay({ wallets, onWalletsUpdated }: Props) {
                     value={editAddress}
                     onChange={(e) => setEditAddress(e.target.value)}
                     className="max-w-md"
+                    placeholder="Enter a nickname for this wallet"
                   />
                   <Button
                     variant="ghost"
@@ -217,15 +228,20 @@ export function WalletDisplay({ wallets, onWalletsUpdated }: Props) {
                   </Button>
                 </div>
               ) : (
-                <div className="flex items-center gap-2">
-                  <h3 className="text-lg font-semibold">{wallet.address}</h3>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleEditStart(wallet)}
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-lg font-semibold">
+                      {nicknames[wallet.id] || 'Unnamed Wallet'}
+                    </h3>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleEditStart(wallet)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <p className="text-sm text-muted-foreground">{wallet.address}</p>
                 </div>
               )}
             </div>
