@@ -11,30 +11,48 @@ export type Database = {
     Tables: {
       nft_holdings: {
         Row: {
+          block_number: number
           created_at: string
           id: string
           micro_nfts: number
           project_name: Database["public"]["Enums"]["project_name"]
+          staked_micro_nfts: number
+          total_micro_nfts: number
           total_nfts: number
+          unstaked_micro_nfts: number
           updated_at: string
+          user_id: string
+          wallet_address: string
           wallet_id: string
         }
         Insert: {
+          block_number: number
           created_at?: string
           id?: string
           micro_nfts: number
           project_name: Database["public"]["Enums"]["project_name"]
+          staked_micro_nfts?: number
+          total_micro_nfts?: number
           total_nfts: number
+          unstaked_micro_nfts?: number
           updated_at?: string
+          user_id: string
+          wallet_address: string
           wallet_id: string
         }
         Update: {
+          block_number?: number
           created_at?: string
           id?: string
           micro_nfts?: number
           project_name?: Database["public"]["Enums"]["project_name"]
+          staked_micro_nfts?: number
+          total_micro_nfts?: number
           total_nfts?: number
+          unstaked_micro_nfts?: number
           updated_at?: string
+          user_id?: string
+          wallet_address?: string
           wallet_id?: string
         }
         Relationships: [
@@ -117,6 +135,7 @@ export type Database = {
           address: string
           created_at: string
           id: string
+          nickname: string | null
           profile_id: string
           updated_at: string
         }
@@ -124,6 +143,7 @@ export type Database = {
           address: string
           created_at?: string
           id?: string
+          nickname?: string | null
           profile_id: string
           updated_at?: string
         }
@@ -131,6 +151,7 @@ export type Database = {
           address?: string
           created_at?: string
           id?: string
+          nickname?: string | null
           profile_id?: string
           updated_at?: string
         }
@@ -149,7 +170,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_secret: {
+        Args: {
+          secret_name: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       project_name:
