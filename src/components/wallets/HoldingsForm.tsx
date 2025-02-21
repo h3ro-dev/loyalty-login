@@ -1,4 +1,3 @@
-
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -40,6 +39,7 @@ const holdingsSchema = z.object({
   micro_nfts: z.number().min(0, "Must be 0 or greater"),
   total_tokens: z.number().min(0, "Must be 0 or greater"),
   piggy_bank_tokens: z.number().min(0, "Must be 0 or greater"),
+  staked_debt_tokens: z.number().min(0, "Must be 0 or greater"),
 });
 
 type HoldingsFormValues = z.infer<typeof holdingsSchema>;
@@ -68,6 +68,7 @@ const projectOptions: { value: ProjectName; label: string }[] = [
 export function HoldingsForm({ wallets, selectedWallet, onWalletSelect, onHoldingsUpdated }: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const [currentHoldings, setCurrentHoldings] = useState<HoldingsFormValues | null>(null);
 
   useEffect(() => {
     const getUser = async () => {
@@ -85,8 +86,74 @@ export function HoldingsForm({ wallets, selectedWallet, onWalletSelect, onHoldin
       micro_nfts: 0,
       total_tokens: 0,
       piggy_bank_tokens: 0,
+      staked_debt_tokens: 0,
     },
   });
+
+  useEffect(() => {
+    const fetchCurrentHoldings = async () => {
+      if (!selectedWallet || !form.getValues("project_name")) return;
+
+      const [{ data: tokenHoldings }, { data: nftHoldings }] = await Promise.all([
+        supabase
+          .from("token_holdings")
+          .select("*")
+          .eq("wallet_id", selectedWallet)
+          .eq("project_name", form.getValues("project_name"))
+          .maybeSingle(),
+        supabase
+          .from("nft_holdings")
+          .select("*")
+          .eq("wallet_id", selectedWallet)
+          .eq("project_name", form.getValues("project_name"))
+          .maybeSingle(),
+      ]);
+
+      if (tokenHoldings || nftHoldings) {
+        setCurrentHoldings({
+          project_name: form.getValues("project_name"),
+          total_tokens: tokenHoldings?.total_tokens || 0,
+          piggy_bank_tokens: tokenHoldings?.piggy_bank_tokens || 0,
+          staked_debt_tokens: tokenHoldings?.staked_debt_tokens || 0,
+          total_nfts: nftHoldings?.total_nfts || 0,
+          micro_nfts: nftHoldings?.micro_nfts || 0,
+        });
+        form.reset({
+          project_name: form.getValues("project_name"),
+          total_tokens: tokenHoldings?.total_tokens || 0,
+          piggy_bank_tokens: tokenHoldings?.piggy_bank_tokens || 0,
+          staked_debt_tokens: tokenHoldings?.staked_debt_tokens || 0,
+          total_nfts: nftHoldings?.total_nfts || 0,
+          micro_nfts: nftHoldings?.micro_nfts || 0,
+        });
+      } else {
+        setCurrentHoldings(null);
+        form.reset({
+          project_name: form.getValues("project_name"),
+          total_tokens: 0,
+          piggy_bank_tokens: 0,
+          staked_debt_tokens: 0,
+          total_nfts: 0,
+          micro_nfts: 0,
+        });
+      }
+    };
+
+    fetchCurrentHoldings();
+  }, [selectedWallet, form.watch("project_name")]);
+
+  const handleInputFocus = (field: keyof HoldingsFormValues) => {
+    if (field !== 'project_name') {
+      form.setValue(field, 0);
+    }
+  };
+
+  const handleInputBlur = (field: keyof HoldingsFormValues) => {
+    const value = form.getValues(field);
+    if (value === 0 && currentHoldings) {
+      form.setValue(field, currentHoldings[field]);
+    }
+  };
 
   const onSubmit = async (values: HoldingsFormValues) => {
     if (!selectedWallet) {
@@ -124,6 +191,7 @@ export function HoldingsForm({ wallets, selectedWallet, onWalletSelect, onHoldin
           .update({
             total_tokens: values.total_tokens,
             piggy_bank_tokens: values.piggy_bank_tokens,
+            staked_debt_tokens: values.project_name === "DEBT" ? values.staked_debt_tokens : 0,
           })
           .eq("id", existingTokenHoldings.id);
 
@@ -136,6 +204,7 @@ export function HoldingsForm({ wallets, selectedWallet, onWalletSelect, onHoldin
             project_name: values.project_name,
             total_tokens: values.total_tokens,
             piggy_bank_tokens: values.piggy_bank_tokens,
+            staked_debt_tokens: values.project_name === "DEBT" ? values.staked_debt_tokens : 0,
           });
 
         if (tokenError) throw tokenError;
@@ -263,6 +332,8 @@ export function HoldingsForm({ wallets, selectedWallet, onWalletSelect, onHoldin
                           type="number"
                           {...field}
                           onChange={e => field.onChange(Number(e.target.value))}
+                          onFocus={() => handleInputFocus('total_nfts')}
+                          onBlur={() => handleInputBlur('total_nfts')}
                         />
                       </FormControl>
                       <FormMessage />
@@ -281,6 +352,8 @@ export function HoldingsForm({ wallets, selectedWallet, onWalletSelect, onHoldin
                           type="number"
                           {...field}
                           onChange={e => field.onChange(Number(e.target.value))}
+                          onFocus={() => handleInputFocus('micro_nfts')}
+                          onBlur={() => handleInputBlur('micro_nfts')}
                         />
                       </FormControl>
                       <FormMessage />
@@ -311,6 +384,8 @@ export function HoldingsForm({ wallets, selectedWallet, onWalletSelect, onHoldin
                           type="number"
                           {...field}
                           onChange={e => field.onChange(Number(e.target.value))}
+                          onFocus={() => handleInputFocus('total_tokens')}
+                          onBlur={() => handleInputBlur('total_tokens')}
                         />
                       </FormControl>
                       <FormMessage />
@@ -329,12 +404,36 @@ export function HoldingsForm({ wallets, selectedWallet, onWalletSelect, onHoldin
                           type="number"
                           {...field}
                           onChange={e => field.onChange(Number(e.target.value))}
+                          onFocus={() => handleInputFocus('piggy_bank_tokens')}
+                          onBlur={() => handleInputBlur('piggy_bank_tokens')}
                         />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+
+                {form.watch("project_name") === "DEBT" && (
+                  <FormField
+                    control={form.control}
+                    name="staked_debt_tokens"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Staked DEBT Tokens</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            {...field}
+                            onChange={e => field.onChange(Number(e.target.value))}
+                            onFocus={() => handleInputFocus('staked_debt_tokens')}
+                            onBlur={() => handleInputBlur('staked_debt_tokens')}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
               </div>
 
               <FormDescription className="text-sm text-muted-foreground">
