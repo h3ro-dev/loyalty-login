@@ -98,6 +98,7 @@ export type Database = {
           id: string
           piggy_bank_tokens: number
           project_name: Database["public"]["Enums"]["project_name"]
+          staked_debt_tokens: number
           total_tokens: number
           updated_at: string
           wallet_id: string
@@ -107,6 +108,7 @@ export type Database = {
           id?: string
           piggy_bank_tokens: number
           project_name: Database["public"]["Enums"]["project_name"]
+          staked_debt_tokens?: number
           total_tokens: number
           updated_at?: string
           wallet_id: string
@@ -116,6 +118,7 @@ export type Database = {
           id?: string
           piggy_bank_tokens?: number
           project_name?: Database["public"]["Enums"]["project_name"]
+          staked_debt_tokens?: number
           total_tokens?: number
           updated_at?: string
           wallet_id?: string

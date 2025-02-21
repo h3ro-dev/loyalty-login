@@ -1,3 +1,4 @@
+
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -32,6 +33,27 @@ import { toast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 
 type ProjectName = "DEBT" | "CHRS" | "ALUM" | "BAUX" | "BGLD" | "OIL" | "DCM" | "DATA" | "DLG" | "GDLG" | "GROW" | "FARM" | "NATG" | "NGAS" | "XPLR" | "EXPL";
+
+interface TokenHolding {
+  id: string;
+  wallet_id: string;
+  project_name: ProjectName;
+  total_tokens: number;
+  piggy_bank_tokens: number;
+  staked_debt_tokens: number;
+  created_at: string;
+  updated_at: string;
+}
+
+interface NFTHolding {
+  id: string;
+  wallet_id: string;
+  project_name: ProjectName;
+  total_nfts: number;
+  micro_nfts: number;
+  created_at: string;
+  updated_at: string;
+}
 
 const holdingsSchema = z.object({
   project_name: z.enum(["DEBT", "CHRS", "ALUM", "BAUX", "BGLD", "OIL", "DCM", "DATA", "DLG", "GDLG", "GROW", "FARM", "NATG", "NGAS", "XPLR", "EXPL"]),
@@ -110,22 +132,17 @@ export function HoldingsForm({ wallets, selectedWallet, onWalletSelect, onHoldin
       ]);
 
       if (tokenHoldings || nftHoldings) {
-        setCurrentHoldings({
+        const holdings: HoldingsFormValues = {
           project_name: form.getValues("project_name"),
           total_tokens: tokenHoldings?.total_tokens || 0,
           piggy_bank_tokens: tokenHoldings?.piggy_bank_tokens || 0,
-          staked_debt_tokens: tokenHoldings?.staked_debt_tokens || 0,
+          staked_debt_tokens: (tokenHoldings as TokenHolding)?.staked_debt_tokens || 0,
           total_nfts: nftHoldings?.total_nfts || 0,
           micro_nfts: nftHoldings?.micro_nfts || 0,
-        });
-        form.reset({
-          project_name: form.getValues("project_name"),
-          total_tokens: tokenHoldings?.total_tokens || 0,
-          piggy_bank_tokens: tokenHoldings?.piggy_bank_tokens || 0,
-          staked_debt_tokens: tokenHoldings?.staked_debt_tokens || 0,
-          total_nfts: nftHoldings?.total_nfts || 0,
-          micro_nfts: nftHoldings?.micro_nfts || 0,
-        });
+        };
+        
+        setCurrentHoldings(holdings);
+        form.reset(holdings);
       } else {
         setCurrentHoldings(null);
         form.reset({
@@ -241,7 +258,6 @@ export function HoldingsForm({ wallets, selectedWallet, onWalletSelect, onHoldin
         description: `Your holdings have been successfully ${existingTokenHoldings || existingNFTHoldings ? "updated" : "recorded"}.`,
       });
       
-      form.reset();
       onHoldingsUpdated();
     } catch (error: any) {
       toast({
